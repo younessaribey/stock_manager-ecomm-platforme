@@ -450,7 +450,7 @@ const AddProductWizard = () => {
         totalImages: values.productImages ? values.productImages.length : 0
       });
 
-      const response = await axios.post('http://localhost:5050/api/products', formData, {
+      await axios.post('http://localhost:5050/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`

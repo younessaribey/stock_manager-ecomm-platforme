@@ -12,7 +12,6 @@ import {
   FaYoutube, 
   FaTiktok,
   FaPlus,
-  FaEdit,
   FaEye
 } from 'react-icons/fa';
 import api from '../../utils/api';

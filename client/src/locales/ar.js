@@ -1,5 +1,5 @@
 // Arabic translations
-export default {
+const ar = {
   siteName: 'Brothers Phone',
   common: {
     loading: 'جاري التحميل...',
@@ -149,3 +149,5 @@ export default {
     copyright: '© 2025 Brothers Phone. جميع الحقوق محفوظة.',
   },
 };
+
+export default ar;

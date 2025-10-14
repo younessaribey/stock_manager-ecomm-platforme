@@ -21,8 +21,6 @@ import {
   FaChevronDown,
   FaChevronUp
 } from 'react-icons/fa';
-import Button from '../../components/ui/Button';
-import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getUploadedImageUrl } from '../../utils/imageUtils';

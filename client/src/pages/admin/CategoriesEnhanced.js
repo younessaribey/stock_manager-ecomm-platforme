@@ -16,7 +16,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaFolder,
-  FaFolderOpen,
   FaTag
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';

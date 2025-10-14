@@ -8,7 +8,6 @@ import { useSite } from '../../contexts/SiteContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getUploadedImageUrl } from '../../utils/imageUtils';
-import Button from '../../components/ui/Button';
 
 
 const Home = () => {
@@ -120,7 +119,7 @@ const Home = () => {
         const randomIndex = Math.floor(Math.random() * allImages.length);
         setCurrentImageIndex(randomIndex);
       }
-    }, [product.id]); // Reset when product changes
+    }, [product.id, allImages.length]); // Reset when product changes
 
     return (
       <div className={`group rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>

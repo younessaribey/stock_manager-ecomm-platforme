@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.03ebef12.css",
+    "main.js": "/static/js/main.ba1d010b.js",
+    "static/js/754.c87ffc1e.chunk.js": "/static/js/754.c87ffc1e.chunk.js",
+    "static/media/logo.webp": "/static/media/logo.76cd1d4c02c10e1c09da.webp",
+    "static/media/iPod lock and unlock iOS 6 (80BC0F3-MMH).mp3": "/static/media/iPod lock and unlock iOS 6 (80BC0F3-MMH).4ac2cde04bfa3a180c2a.mp3",
+    "static/media/tritone.mp3": "/static/media/tritone.1c622627ae59bcdce0f1.mp3",
+    "index.html": "/index.html",
+    "main.03ebef12.css.map": "/static/css/main.03ebef12.css.map",
+    "main.ba1d010b.js.map": "/static/js/main.ba1d010b.js.map",
+    "754.c87ffc1e.chunk.js.map": "/static/js/754.c87ffc1e.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.03ebef12.css",
+    "static/js/main.ba1d010b.js"
+  ]
+}

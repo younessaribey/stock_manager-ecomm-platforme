@@ -20,7 +20,7 @@ const Settings = () => {
     itemsPerPage: 20,
     lowStockThreshold: 10
   });
-  const [fetching, setFetching] = useState(true);
+  const [, setFetching] = useState(true);
 
   // Fetch settings on mount
   useEffect(() => {

@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { 
   FaChartLine, 
   FaChartBar, 
   FaChartPie, 
-  FaCalendar, 
   FaDownload, 
-  FaFilter, 
   FaSearch
 } from 'react-icons/fa';
 import { 
@@ -22,7 +19,7 @@ import {
   ArcElement,
   RadialLinearScale
 } from 'chart.js';
-import { Line, Bar, Doughnut, Radar } from 'react-chartjs-2';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { dashboardAPI } from '../../utils/api';
 
 // Register ChartJS components

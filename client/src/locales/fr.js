@@ -1,5 +1,5 @@
 // French translations
-export default {
+const fr = {
   siteName: 'Brothers Phone',
   common: {
     loading: 'Chargement...',
@@ -149,3 +149,5 @@ export default {
     copyright: '© 2025 Brothers Phone. Tous droits réservés.',
   },
 };
+
+export default fr;

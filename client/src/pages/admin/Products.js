@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { productsAPI, categoriesAPI } from '../../utils/api';
 import { getUploadedImageUrl } from '../../utils/imageUtils';
-import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaExclamationTriangle, FaMobile, FaTabletAlt, FaLaptop, FaClock, FaTag, FaBoxes } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaExclamationTriangle, FaMobile, FaClock, FaBoxes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
@@ -392,7 +392,7 @@ const Products = () => {
                 <div className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {categoryProducts.map((product) => {
-                      const { mainCategory, subcategory } = getProductCategoryInfo(product);
+                      const { subcategory } = getProductCategoryInfo(product);
                       return (
                         <div key={product.id} className="group relative bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                           {/* Product Image */}
@@ -485,7 +485,7 @@ const Products = () => {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {categoryProducts.map((product) => {
-                        const { mainCategory, subcategory } = getProductCategoryInfo(product);
+                        const { subcategory } = getProductCategoryInfo(product);
                         return (
                           <tr key={product.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">

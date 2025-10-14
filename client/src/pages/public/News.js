@@ -16,12 +16,12 @@ import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../utils/api';
 
 const News = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [newsContent, setNewsContent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
 
   useEffect(() => {
     fetchNewsContent();

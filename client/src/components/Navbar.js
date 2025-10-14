@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,7 +9,6 @@ import {
   FaShoppingBag,
   FaNewspaper,
   FaEnvelope,
-  FaGlobe,
   FaChevronDown,
   FaMoon,
   FaSun
@@ -30,6 +29,52 @@ const Navbar = () => {
   const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+
+  // Helpers to detect background luminance beneath navbar and dock
+  const parseRgb = (colorStr) => {
+    if (!colorStr) return { r: 255, g: 255, b: 255, a: 1 };
+    const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
+    if (match) {
+      return {
+        r: parseInt(match[1], 10),
+        g: parseInt(match[2], 10),
+        b: parseInt(match[3], 10),
+        a: match[4] !== undefined ? parseFloat(match[4]) : 1
+      };
+    }
+    return { r: 255, g: 255, b: 255, a: 1 };
+  };
+
+  const getRelativeLuminance = ({ r, g, b }) => {
+    const srgb = [r, g, b].map((v) => v / 255);
+    const linear = srgb.map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+
+  const evaluateBackgroundLightness = useCallback(() => {
+    try {
+      const midX = Math.floor(window.innerWidth / 2);
+      const sampleTopY = Math.min(Math.max(80, Math.floor(window.innerHeight * 0.12)), window.innerHeight - 1);
+      const sampleBottomY = Math.max(window.innerHeight - 120, 0);
+      const topEl = document.elementFromPoint(midX, sampleTopY);
+      const bottomEl = document.elementFromPoint(midX, sampleBottomY);
+      const topStyle = topEl ? window.getComputedStyle(topEl) : null;
+      const bottomStyle = bottomEl ? window.getComputedStyle(bottomEl) : null;
+      const topColor = parseRgb(topStyle ? topStyle.backgroundColor : 'rgb(255,255,255)');
+      const bottomColor = parseRgb(bottomStyle ? bottomStyle.backgroundColor : 'rgb(255,255,255)');
+      // If fully transparent, assume underlying is light (typical white pages)
+      const topLum = (topColor.a !== undefined && topColor.a < 0.05) ? 1 : getRelativeLuminance(topColor);
+      const bottomLum = (bottomColor.a !== undefined && bottomColor.a < 0.05) ? 1 : getRelativeLuminance(bottomColor);
+      const nextTop = topLum > 0.7;
+      const nextBottom = bottomLum > 0.7;
+      // Only update state if changed to prevent re-renders and blinking
+      setIsLightTopBg((prev) => (prev !== nextTop ? nextTop : prev));
+      setIsLightBottomBg((prev) => (prev !== nextBottom ? nextBottom : prev));
+    } catch (e) {
+      setIsLightTopBg(true);
+      setIsLightBottomBg(true);
+    }
+  }, []);
 
   // Handle scroll events
   useEffect(() => {
@@ -54,60 +99,14 @@ const Navbar = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  // Helpers to detect background luminance beneath navbar and dock
-  const parseRgb = (colorStr) => {
-    if (!colorStr) return { r: 255, g: 255, b: 255, a: 1 };
-    const match = colorStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
-    if (match) {
-      return {
-        r: parseInt(match[1], 10),
-        g: parseInt(match[2], 10),
-        b: parseInt(match[3], 10),
-        a: match[4] !== undefined ? parseFloat(match[4]) : 1
-      };
-    }
-    return { r: 255, g: 255, b: 255, a: 1 };
-  };
-
-  const getRelativeLuminance = ({ r, g, b }) => {
-    const srgb = [r, g, b].map((v) => v / 255);
-    const linear = srgb.map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
-    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-  };
-
-  const evaluateBackgroundLightness = () => {
-    try {
-      const midX = Math.floor(window.innerWidth / 2);
-      const sampleTopY = Math.min(Math.max(80, Math.floor(window.innerHeight * 0.12)), window.innerHeight - 1);
-      const sampleBottomY = Math.max(window.innerHeight - 120, 0);
-      const topEl = document.elementFromPoint(midX, sampleTopY);
-      const bottomEl = document.elementFromPoint(midX, sampleBottomY);
-      const topStyle = topEl ? window.getComputedStyle(topEl) : null;
-      const bottomStyle = bottomEl ? window.getComputedStyle(bottomEl) : null;
-      const topColor = parseRgb(topStyle ? topStyle.backgroundColor : 'rgb(255,255,255)');
-      const bottomColor = parseRgb(bottomStyle ? bottomStyle.backgroundColor : 'rgb(255,255,255)');
-      // If fully transparent, assume underlying is light (typical white pages)
-      const topLum = (topColor.a !== undefined && topColor.a < 0.05) ? 1 : getRelativeLuminance(topColor);
-      const bottomLum = (bottomColor.a !== undefined && bottomColor.a < 0.05) ? 1 : getRelativeLuminance(bottomColor);
-      const nextTop = topLum > 0.7;
-      const nextBottom = bottomLum > 0.7;
-      // Only update state if changed to prevent re-renders and blinking
-      setIsLightTopBg((prev) => (prev !== nextTop ? nextTop : prev));
-      setIsLightBottomBg((prev) => (prev !== nextBottom ? nextBottom : prev));
-    } catch (e) {
-      setIsLightTopBg(true);
-      setIsLightBottomBg(true);
-    }
-  };
+  }, [lastScrollY, evaluateBackgroundLightness]);
 
   useEffect(() => {
     evaluateBackgroundLightness();
     const onResize = () => evaluateBackgroundLightness();
     window.addEventListener('resize', onResize, { passive: true });
     return () => window.removeEventListener('resize', onResize);
-  }, [location.pathname]);
+  }, [location.pathname, evaluateBackgroundLightness]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

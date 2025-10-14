@@ -184,9 +184,11 @@ export const searchProducts = (searchTerm) => {
   );
 };
 
-export default {
+const mockData = {
   categories: mockCategories,
   products: mockProducts,
   getProductsByCategory,
   searchProducts
 };
+
+export default mockData;
