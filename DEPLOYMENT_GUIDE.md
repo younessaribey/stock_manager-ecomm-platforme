@@ -136,3 +136,4 @@ If you continue to have issues:
 2. Verify environment variables are set
 3. Ensure database is accessible
 4. Test locally first with `npm run build`
+# Deployment fixes applied - Wed Oct 15 02:42:57 +08 2025
