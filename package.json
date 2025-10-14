@@ -1,0 +1,35 @@
+{
+  "name": "stock-management-app",
+  "version": "1.0.0",
+  "description": "Full Stack Stock Management Application with React and Express",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client && npm start",
+    "server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "build": "cd client && npm run build && cd ../server && npm install --production",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm install --production",
+    "start": "cd server && npm start",
+    "launch": "node start.js",
+    "quick-start": "node start.js",
+    "vercel-build": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "express",
+    "stock",
+    "inventory",
+    "management"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "pg": "^8.15.5"
+  }
+}

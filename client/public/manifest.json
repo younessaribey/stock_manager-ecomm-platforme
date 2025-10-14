@@ -1,0 +1,15 @@
+{
+  "short_name": "Brothers Phone",
+  "name": "Brothers Phone Shop",
+  "icons": [
+    {
+      "src": "assets/product-md.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1f2937",
+  "background_color": "#ffffff"
+}
