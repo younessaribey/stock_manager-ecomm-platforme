@@ -8,6 +8,7 @@ import { useSite } from '../../contexts/SiteContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getUploadedImageUrl } from '../../utils/imageUtils';
+import { productsAPI } from '../../utils/api';
 
 
 const Home = () => {
@@ -45,7 +46,7 @@ const Home = () => {
     const fetchFeaturedProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5050/api/products/public');
+        const response = await productsAPI.getAllPublic();
         // Get up to 8 products with images as featured products
         const productsWithImages = response.data.filter(product => product.imageUrl && product.quantity > 0);
         setFeaturedProducts(productsWithImages.slice(0, 8));

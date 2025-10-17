@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { productsAPI, categoriesAPI } from '../../utils/api';
 import { 
   FaShoppingCart, 
   FaSearch, 
@@ -67,8 +68,8 @@ const Products = () => {
         
         // Load products and categories in parallel
         const [productsResponse, categoriesResponse] = await Promise.all([
-          axios.get('http://localhost:5050/api/products/public'),
-          axios.get('http://localhost:5050/api/categories')
+          productsAPI.getAllPublic(),
+          categoriesAPI.getAll()
         ]);
         
         setProducts(productsResponse.data);
