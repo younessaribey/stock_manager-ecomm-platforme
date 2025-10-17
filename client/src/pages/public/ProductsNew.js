@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { productsAPI, categoriesAPI } from '../../utils/api';
+import { DEFAULT_PHONE_IMAGE } from '../../data/seedData';
 import { 
   FaShoppingCart, 
   FaSearch, 
@@ -70,6 +71,9 @@ const Products = () => {
           productsAPI.getAllPublic(),
           categoriesAPI.getAll()
         ]);
+        
+        console.log('Products loaded:', productsResponse.data);
+        console.log('Categories loaded:', categoriesResponse.data);
         
         setProducts(productsResponse.data);
         
@@ -494,12 +498,12 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
             {allImages.length > 0 ? (
               <>
                 <img 
-                  src={getUploadedImageUrl(allImages[currentImageIndex])} 
+                  src={getUploadedImageUrl(allImages[currentImageIndex]) || DEFAULT_PHONE_IMAGE} 
                   alt={`${product.name} ${currentImageIndex + 1}`} 
                   className="w-full h-full object-cover transition-opacity duration-300"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/assets/product-md.jpg';
+                    e.target.src = DEFAULT_PHONE_IMAGE;
                   }}
                 />
                 
@@ -619,12 +623,12 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
         {allImages.length > 0 ? (
           <>
             <img 
-              src={getUploadedImageUrl(allImages[currentImageIndex])} 
+              src={getUploadedImageUrl(allImages[currentImageIndex]) || DEFAULT_PHONE_IMAGE} 
               alt={`${product.name} ${currentImageIndex + 1}`} 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = '/assets/product-md.jpg';
+                e.target.src = DEFAULT_PHONE_IMAGE;
               }}
             />
             
@@ -669,9 +673,11 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
             )}
           </>
         ) : (
-          <div className="flex items-center justify-center w-full h-full bg-gray-100">
-            <FaBox className="text-gray-400 text-3xl" />
-          </div>
+          <img 
+            src={DEFAULT_PHONE_IMAGE} 
+            alt={product.name} 
+            className="w-full h-full object-cover"
+          />
         )}
         
         {isOutOfStock && (
