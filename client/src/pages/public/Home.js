@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaMobileAlt, FaMapMarkerAlt, FaPhone, FaClock, FaArrowRight, FaStore, FaTabletAlt, FaLaptop, FaHeadphones, FaRegCheckCircle, FaStar, FaFire, FaTags, FaShoppingCart, FaEye } from 'react-icons/fa';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 
 import { useSite } from '../../contexts/SiteContext';
