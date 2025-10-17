@@ -16,7 +16,6 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { useSite } from '../contexts/SiteContext';
-import Footer from '../components/Footer';
 
 const AdminLayout = ({ children }) => {
   const { currentUser, logout } = useAuth();
@@ -107,7 +106,7 @@ const AdminLayout = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-64">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white shadow-sm z-50 relative">
           <div className="px-4 py-4 lg:px-6">
@@ -157,11 +156,8 @@ const AdminLayout = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-4 lg:p-6">
-            {children}
-          </div>
-          <Footer />
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-4 lg:p-6">
+          {children}
         </main>
       </div>
 
