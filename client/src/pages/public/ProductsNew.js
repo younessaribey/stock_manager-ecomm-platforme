@@ -37,7 +37,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('name');
-  const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [priceRange, setPriceRange] = useState([0, 100000]); // Increased to accommodate DZD prices
   const [showFilters, setShowFilters] = useState(false); // Filters collapsed by default
 
   const [expandedCategories, setExpandedCategories] = useState({});
