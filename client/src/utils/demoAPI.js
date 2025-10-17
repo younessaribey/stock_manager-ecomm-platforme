@@ -49,7 +49,22 @@ export const demoProductsAPI = {
     return simulateAsync(products);
   },
 
+  getAllPublic: async () => {
+    // Public endpoint - returns all products without auth requirement
+    const products = productsDB.getAll().map(populateProduct);
+    return simulateAsync(products);
+  },
+
   getById: async (id) => {
+    const product = productsDB.getById(id);
+    if (!product) {
+      return simulateError('Product not found', 404);
+    }
+    return simulateAsync(populateProduct(product));
+  },
+
+  getByIdPublic: async (id) => {
+    // Public endpoint - returns single product without auth requirement
     const product = productsDB.getById(id);
     if (!product) {
       return simulateError('Product not found', 404);
