@@ -16,6 +16,7 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { useSite } from '../contexts/SiteContext';
+import Footer from '../components/Footer';
 
 const AdminLayout = ({ children }) => {
   const { currentUser, logout } = useAuth();
@@ -168,6 +169,9 @@ const AdminLayout = ({ children }) => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      
+      {/* Developer Signature */}
+      <Footer />
     </div>
   );
 };

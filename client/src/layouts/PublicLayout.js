@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSite } from '../contexts/SiteContext';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const PublicLayout = ({ children }) => {
   const { siteName } = useSite();
@@ -79,6 +80,9 @@ const PublicLayout = ({ children }) => {
           </div>
         </div>
       </footer>
+      
+      {/* Developer Signature */}
+      <Footer />
     </div>
   );
 };

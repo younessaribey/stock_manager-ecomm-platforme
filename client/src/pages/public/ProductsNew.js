@@ -72,9 +72,6 @@ const Products = () => {
           categoriesAPI.getAll()
         ]);
         
-        console.log('Products loaded:', productsResponse.data);
-        console.log('Categories loaded:', categoriesResponse.data);
-        
         setProducts(productsResponse.data);
         
         // Organize categories with subcategories

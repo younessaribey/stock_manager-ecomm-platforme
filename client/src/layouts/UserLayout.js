@@ -13,6 +13,7 @@ import {
   FaTimes
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
+import Footer from '../components/Footer';
 
 const UserLayout = ({ children }) => {
   const { currentUser, logout } = useAuth();
@@ -150,6 +151,9 @@ const UserLayout = ({ children }) => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      
+      {/* Developer Signature */}
+      <Footer />
     </div>
   );
 };

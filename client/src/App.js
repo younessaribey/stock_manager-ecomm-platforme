@@ -82,13 +82,7 @@ function App() {
   // Initialize demo data if in demo mode
   useEffect(() => {
     if (APP_CONFIG.DEMO_MODE) {
-      console.log('🎨 Running in DEMO MODE - Using localStorage for data');
-      console.log('📚 Demo credentials:');
-      console.log('  Admin: admin@demo.com / admin123');
-      console.log('  User: user@demo.com / user123');
       initializeDemoData();
-    } else {
-      console.log('🚀 Running in PRODUCTION MODE - Using backend API');
     }
   }, []);
 
