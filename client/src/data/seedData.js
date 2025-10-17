@@ -3,6 +3,9 @@
  * This data represents initial state for the portfolio demo
  */
 
+// Default phone image for products without images
+export const DEFAULT_PHONE_IMAGE = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&h=500&fit=crop';
+
 export const seedData = {
   users: [
     {

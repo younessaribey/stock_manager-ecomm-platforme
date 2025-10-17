@@ -8,6 +8,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getUploadedImageUrl } from '../../utils/imageUtils';
 import { productsAPI } from '../../utils/api';
+import { DEFAULT_PHONE_IMAGE } from '../../data/seedData';
 
 
 const Home = () => {
@@ -131,12 +132,12 @@ const Home = () => {
           {allImages.length > 0 ? (
             <>
               <img
-                src={getUploadedImageUrl(allImages[currentImageIndex])}
+                src={getUploadedImageUrl(allImages[currentImageIndex]) || DEFAULT_PHONE_IMAGE}
                 alt={`${product.name} ${currentImageIndex + 1}`}
                 className="w-full h-48 sm:h-48 object-cover group-hover:scale-105 transition-all duration-500"
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = '/assets/product-md.jpg';
+                  e.target.src = DEFAULT_PHONE_IMAGE;
                 }}
               />
               
