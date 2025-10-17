@@ -112,7 +112,7 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {/* Client Info Popup */}
       {showClientInfo && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
@@ -162,15 +162,15 @@ function AdminDashboard() {
         </div>
       )}
 
-      <div className="mb-8">
-        <div className="flex justify-between items-center">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600">Welcome to your admin dashboard. Here's an overview of your store.</p>
           </div>
           <button 
             onClick={() => setShowClientInfo(true)}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             <FaInfoCircle className="mr-2" />
             Client Info
@@ -179,7 +179,7 @@ function AdminDashboard() {
       </div>
       
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center">
             <div className="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
@@ -242,10 +242,10 @@ function AdminDashboard() {
       </div>
       
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Sales Overview</h2>
-          <div className="h-64">
+          <div className="h-56 sm:h-64">
             <Line 
               data={salesChartData} 
               options={{
@@ -264,7 +264,7 @@ function AdminDashboard() {
         
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Orders This Week</h2>
-          <div className="h-64">
+          <div className="h-56 sm:h-64">
             <Bar 
               data={ordersChartData} 
               options={{
@@ -283,7 +283,7 @@ function AdminDashboard() {
       </div>
 
       {/* Categories Overview */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6 sm:mb-8">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">📱 Brothers Phone Categories</h2>
@@ -304,7 +304,7 @@ function AdminDashboard() {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Main Categories */}
           <div>
             <div className="flex items-center mb-3">
@@ -314,7 +314,7 @@ function AdminDashboard() {
                 {mainCategories.length}
               </span>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-48 sm:max-h-40 overflow-y-auto">
               {mainCategories.map((category) => (
                 <div key={category.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <div className="flex items-center">
@@ -348,7 +348,7 @@ function AdminDashboard() {
                 {subcategories.length}
               </span>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
+            <div className="space-y-2 max-h-48 sm:max-h-40 overflow-y-auto">
               {subcategories.slice(0, 8).map((subcategory) => {
                 const parent = mainCategories.find(c => c.id === subcategory.parentId);
                 return (
@@ -383,7 +383,7 @@ function AdminDashboard() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white rounded-lg shadow-sm p-6 col-span-1">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Sales by Category</h2>
           <div className="h-64 flex justify-center items-center">
@@ -408,7 +408,7 @@ function AdminDashboard() {
           </div>
           
           {stats.lowStockProducts.length > 0 ? (
-            <div className="overflow-x-auto">
+            <div className="-mx-2 sm:mx-0 overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -469,7 +469,7 @@ function AdminDashboard() {
       </div>
       
       {/* Recent Orders */}
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6 sm:mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
           <Link to="/admin/orders" className="text-indigo-600 text-sm font-medium hover:text-indigo-800">
@@ -478,7 +478,7 @@ function AdminDashboard() {
         </div>
         
         {(stats.recentOrders && stats.recentOrders.length > 0) ? (
-          <div className="overflow-x-auto">
+          <div className="-mx-2 sm:mx-0 overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -526,7 +526,7 @@ function AdminDashboard() {
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Link
             to="/admin/products/wizard"
             className="flex items-center justify-center p-4 border border-blue-200 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100"

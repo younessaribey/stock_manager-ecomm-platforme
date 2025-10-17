@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { FaSignInAlt, FaUserShield } from 'react-icons/fa';
 import { useAuth } from '../../contexts/AuthContext';
+import APP_CONFIG from '../../config/appConfig';
 import { toast } from 'react-toastify';
 
 const AdminLogin = () => {
@@ -67,17 +68,19 @@ const AdminLogin = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-yellow-700 font-medium">
-                Development Mode - Admin Test Credentials
+                Development Mode - Admin Demo Credentials
               </p>
               <div className="mt-2 text-sm text-yellow-700">
-                <p><strong>Email:</strong> admin@example.com</p>
-                <p><strong>Password:</strong> admin123</p>
+                <p><strong>Email:</strong> {APP_CONFIG.DEMO_ADMIN.email}</p>
+                <p><strong>Password:</strong> {APP_CONFIG.DEMO_ADMIN.password}</p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  document.getElementById('email').value = 'admin@example.com';
-                  document.getElementById('password').value = 'admin123';
+                  const email = APP_CONFIG.DEMO_ADMIN.email;
+                  const password = APP_CONFIG.DEMO_ADMIN.password;
+                  document.getElementById('email').value = email;
+                  document.getElementById('password').value = password;
                   // Trigger Formik change events
                   const emailEvent = new Event('input', { bubbles: true });
                   const passwordEvent = new Event('input', { bubbles: true });
