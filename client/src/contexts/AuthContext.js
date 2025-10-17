@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import jwtDecode from 'jwt-decode';
+import APP_CONFIG from '../config/appConfig';
 
 const AuthContext = createContext();
 
@@ -31,18 +32,42 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      // Check if token is expired
-      const decodedToken = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-      if (decodedToken.exp < currentTime) {
-        // Token is expired
-        localStorage.removeItem('token');
-        sessionStorage.removeItem('token');
-        setCurrentUser(null);
-        setLoading(false);
-        return;
+      let decodedToken;
+      
+      if (APP_CONFIG.DEMO_MODE) {
+        // In demo mode, decode the token (it's base64 encoded JSON)
+        try {
+          decodedToken = JSON.parse(atob(token));
+          // Check if token is expired
+          if (decodedToken.exp && decodedToken.exp < Date.now()) {
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
+            setCurrentUser(null);
+            setLoading(false);
+            return;
+          }
+        } catch {
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
+          setCurrentUser(null);
+          setLoading(false);
+          return;
+        }
+      } else {
+        // In production mode, use jwt-decode
+        decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          // Token is expired
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
+          setCurrentUser(null);
+          setLoading(false);
+          return;
+        }
       }
-      // Token is valid, decode user data from token
+      
+      // Token is valid, set user data
       axios.defaults.headers.common.Authorization = `Bearer ${token}`;
       setCurrentUser(decodedToken);
     } catch (error) {
@@ -113,11 +138,49 @@ export function AuthProvider({ children }) {
   // Login user
   const login = async (credentials, isAdmin = false, rememberMe = false) => {
     try {
-      // Since axios.defaults.baseURL is already set to 'http://localhost:5000/api'
-      // We don't need to include '/api' in the endpoint path
-      const endpoint = isAdmin ? '/auth/login-admin' : '/auth/login';
+      let response;
       
-      const response = await axios.post(endpoint, credentials, { withCredentials: true });
+      if (APP_CONFIG.DEMO_MODE) {
+        // Use demo API for authentication
+        const users = JSON.parse(localStorage.getItem('demo_users') || '[]');
+        const user = users.find(u => u.email === credentials.email);
+        
+        if (!user) {
+          throw new Error('Invalid credentials');
+        }
+        
+        // Check if admin login is required
+        if (isAdmin && user.role !== 'admin') {
+          throw new Error('Invalid admin credentials');
+        }
+        
+        // In demo mode, simple password check (not secure, just for demo)
+        // The demo passwords are stored as plain text or we just accept the known passwords
+        const validPassword = credentials.password === 'admin123' || credentials.password === 'user123';
+        
+        if (!validPassword) {
+          throw new Error('Invalid credentials');
+        }
+        
+        // Generate simple token (base64 encoded JSON)
+        const { password, ...userWithoutPassword } = user;
+        const tokenData = {
+          ...userWithoutPassword,
+          exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+        };
+        const token = btoa(JSON.stringify(tokenData));
+        
+        response = {
+          data: {
+            user: userWithoutPassword,
+            token: token
+          }
+        };
+      } else {
+        // Use real API
+        const endpoint = isAdmin ? '/auth/login-admin' : '/auth/login';
+        response = await axios.post(endpoint, credentials, { withCredentials: true });
+      }
       
       // Store token in localStorage or sessionStorage based on rememberMe
       if (rememberMe) {
@@ -131,7 +194,7 @@ export function AuthProvider({ children }) {
       setCurrentUser(response.data.user);
       return { success: true };
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed';
+      const message = error.message || 'Login failed';
       toast.error(message);
       throw new Error(message);
     }

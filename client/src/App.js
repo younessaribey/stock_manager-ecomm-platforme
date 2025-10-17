@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import APP_CONFIG from './config/appConfig';
+import { initializeDemoData } from './data/seedData';
 
 // Lock Screen
 import LockScreen from './pages/public/LockScreen';
@@ -77,6 +79,19 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
+  // Initialize demo data if in demo mode
+  useEffect(() => {
+    if (APP_CONFIG.DEMO_MODE) {
+      console.log('🎨 Running in DEMO MODE - Using localStorage for data');
+      console.log('📚 Demo credentials:');
+      console.log('  Admin: admin@demo.com / admin123');
+      console.log('  User: user@demo.com / user123');
+      initializeDemoData();
+    } else {
+      console.log('🚀 Running in PRODUCTION MODE - Using backend API');
+    }
+  }, []);
+
   const [isUnlocked, setIsUnlocked] = useState(() => {
     try {
       return Boolean(localStorage.getItem('siteUnlocked'));

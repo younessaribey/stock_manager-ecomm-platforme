@@ -13,7 +13,7 @@ import {
   FaInfoCircle,
   FaTimes
 } from 'react-icons/fa';
-import { dashboardAPI } from '../../utils/api';
+import { dashboardAPI, categoriesAPI } from '../../utils/api';
 
 function AdminDashboard() {
   
@@ -37,30 +37,56 @@ function AdminDashboard() {
       try {
         setLoading(true);
         
-        // Fetch both stats and categories
+        // Fetch both stats and categories using the abstraction layer
         const [statsResponse, categoriesResponse] = await Promise.all([
           dashboardAPI.getStats().catch(err => {
             console.error('❌ Stats API error:', err);
-            return { data: {} };
+            return { data: {
+              totalProducts: 0,
+              totalUsers: 0,
+              totalOrders: 0,
+              pendingApprovals: 0,
+              lowStockProducts: [],
+              recentOrders: []
+            }};
           }),
-          fetch('http://localhost:5050/api/categories')
-            .then(res => {
-              if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-              }
-              return res.json();
-            })
-            .catch(err => {
-              console.error('❌ Categories API error:', err);
-              return [];
-            })
+          categoriesAPI.getAll().catch(err => {
+            console.error('❌ Categories API error:', err);
+            return { data: [] };
+          })
         ]);
         
-        setStats(statsResponse.data);
-        setCategories(categoriesResponse || []);
+        // Ensure we have proper data structure
+        const statsData = statsResponse.data || {};
+        setStats({
+          totalProducts: statsData.totalProducts || 0,
+          totalUsers: statsData.totalUsers || 0,
+          totalOrders: statsData.totalOrders || 0,
+          pendingApprovals: statsData.pendingApprovals || 0,
+          lowStockProducts: statsData.lowStockProducts || [],
+          recentOrders: statsData.recentOrders || [],
+          salesChartData: statsData.salesChartData || { labels: [], datasets: [] },
+          categorySalesData: statsData.categorySalesData || { labels: [], datasets: [] },
+          ordersChartData: statsData.ordersChartData || { labels: [], datasets: [] }
+        });
+        
+        setCategories(Array.isArray(categoriesResponse.data) ? categoriesResponse.data : []);
         
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        // Set safe defaults
+        setStats({
+          totalProducts: 0,
+          totalUsers: 0,
+          totalOrders: 0,
+          pendingApprovals: 0,
+          lowStockProducts: [],
+          recentOrders: [],
+          salesChartData: { labels: [], datasets: [] },
+          categorySalesData: { labels: [], datasets: [] },
+          ordersChartData: { labels: [], datasets: [] }
+        });
+        setCategories([]);
       } finally {
         setLoading(false);
       }
@@ -406,7 +432,12 @@ function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            <img className="h-10 w-10 rounded-full" src={`http://localhost:5050/resources/images/${product.imageUrl}`} alt={product.name} onError={(e) => {e.target.src = '/assets/product-md.jpg'}} />
+                            <img 
+                              className="h-10 w-10 rounded-full object-cover" 
+                              src={product.imageUrl?.startsWith('http') ? product.imageUrl : `/assets/product-md.jpg`} 
+                              alt={product.name} 
+                              onError={(e) => {e.target.src = '/assets/product-md.jpg'}} 
+                            />
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">{product.name}</div>

@@ -1,8 +1,21 @@
 import axios from 'axios';
+import APP_CONFIG from '../config/appConfig';
+import {
+  demoProductsAPI,
+  demoCategoriesAPI,
+  demoAuthAPI,
+  demoUsersAPI,
+  demoOrdersAPI,
+  demoPendingApprovalsAPI,
+  demoSettingsAPI,
+  demoCartAPI,
+  demoWishlistAPI,
+  demoDashboardAPI
+} from './demoAPI';
 
 // Create axios instance with base URL and default config
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5050/api',
+  baseURL: APP_CONFIG.API_URL,
   headers: {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -50,8 +63,8 @@ api.interceptors.response.use(
   }
 );
 
-// Products API
-export const productsAPI = {
+// Products API - switches between demo and production
+export const productsAPI = APP_CONFIG.DEMO_MODE ? demoProductsAPI : {
   getAll: () => api.get('/products'),
   getById: (id) => api.get(`/products/${id}`),
   create: (productData) => api.post('/products', productData),
@@ -73,8 +86,8 @@ export const productsAPI = {
   delete: (id) => api.delete(`/products/${id}`)
 };
 
-// Categories API
-export const categoriesAPI = {
+// Categories API - switches between demo and production
+export const categoriesAPI = APP_CONFIG.DEMO_MODE ? demoCategoriesAPI : {
   getAll: () => api.get('/categories'),
   getById: (id) => api.get(`/categories/${id}`),
   create: (categoryData) => api.post('/categories', categoryData),
@@ -82,24 +95,23 @@ export const categoriesAPI = {
   delete: (id) => api.delete(`/categories/${id}`)
 };
 
-// Auth API
-export const authAPI = {
+// Auth API - switches between demo and production
+export const authAPI = APP_CONFIG.DEMO_MODE ? demoAuthAPI : {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (userData) => api.post('/auth/register', userData),
   getCurrentUser: () => api.get('/auth/me')
 };
 
-// Users API
-export const usersAPI = {
+// Users API - switches between demo and production
+export const usersAPI = APP_CONFIG.DEMO_MODE ? demoUsersAPI : {
   getAll: () => api.get('/users'),
   getById: (id) => api.get(`/users/${id}`),
   update: (id, userData) => api.put(`/users/${id}`, userData),
   delete: (id) => api.delete(`/users/${id}`)
 };
 
-// Dashboard API
-// Orders API
-export const ordersAPI = {
+// Orders API - switches between demo and production
+export const ordersAPI = APP_CONFIG.DEMO_MODE ? demoOrdersAPI : {
   getAll: () => api.get('/orders'),
   getById: (id) => api.get(`/orders/${id}`),
   create: (orderData) => api.post('/orders', orderData),
@@ -107,13 +119,13 @@ export const ordersAPI = {
   delete: (id) => api.delete(`/orders/${id}`)
 };
 
-export const pendingApprovalsAPI = {
+export const pendingApprovalsAPI = APP_CONFIG.DEMO_MODE ? demoPendingApprovalsAPI : {
   getAll: () => api.get('/pending-approvals'),
   approve: (id) => api.post(`/pending-approvals/${id}/approve`),
   reject: (id) => api.delete(`/pending-approvals/${id}/reject`)
 };
 
-export const settingsAPI = {
+export const settingsAPI = APP_CONFIG.DEMO_MODE ? demoSettingsAPI : {
   get() {
     return api.get('/settings');
   },
@@ -125,17 +137,17 @@ export const settingsAPI = {
   }
 };
 
-export const cartAPI = {
+export const cartAPI = APP_CONFIG.DEMO_MODE ? demoCartAPI : {
   get: () => api.get('/cart'),
   update: (items) => api.put('/cart', { items })
 };
 
-export const wishlistAPI = {
+export const wishlistAPI = APP_CONFIG.DEMO_MODE ? demoWishlistAPI : {
   get: () => api.get('/wishlist'),
   update: (items) => api.put('/wishlist', { items })
 };
 
-export const dashboardAPI = {
+export const dashboardAPI = APP_CONFIG.DEMO_MODE ? demoDashboardAPI : {
   getStats: () => api.get('/dashboard/stats'),
   getRecentActivity: () => api.get('/dashboard/recent-activity'),
   getUserStats: () => api.get('/dashboard/user-stats')
