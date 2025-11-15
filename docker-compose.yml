@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:
@@ -11,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: stmg
     ports:
-      - "5432:5432"
+      - "5433:5432"  # External port 5433, internal port 5432 (avoids conflict with Mac PostgreSQL on 5432)
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -63,44 +61,50 @@ services:
       retries: 5
 
   # NestJS Backend API (Development)
-  api:
-    build:
-      context: ./nestjs-backend
-      dockerfile: Dockerfile
-    container_name: stock-manager-api-dev
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: stmg
-      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: redis123
-      JWT_SECRET: dev-secret-key-change-in-production
-      JWT_EXPIRE: 7d
-      CLIENT_URL: http://localhost:3000
-    volumes:
-      - ./nestjs-backend:/app
-      - /app/node_modules
-      - ./nestjs-backend/uploads:/app/uploads
-      - ./nestjs-backend/temp:/app/temp
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - stock-manager-network
-    command: npm run start:dev
+  # NOTE: For development, run API on host machine instead of Docker
+  # Command: cd nestjs-backend && npm run start:dev
+  # Docker runs: PostgreSQL, Redis, RabbitMQ (backend services)
+  # You run: NestJS API on your Mac (for easier debugging & hot reload)
+  
+  # Uncomment below if you want to run API in Docker (not recommended for dev)
+  # api:
+  #   build:
+  #     context: ./nestjs-backend
+  #     dockerfile: Dockerfile.dev
+  #   container_name: stock-manager-api-dev
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3000
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USER: postgres
+  #     DB_PASSWORD: postgres
+  #     DB_NAME: stmg
+  #     RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     REDIS_PASSWORD: redis123
+  #     JWT_SECRET: dev-secret-key-change-in-production
+  #     JWT_EXPIRE: 7d
+  #     CLIENT_URL: http://localhost:3000
+  #   volumes:
+  #     - ./nestjs-backend:/app
+  #     - /app/node_modules
+  #     - ./nestjs-backend/uploads:/app/uploads
+  #     - ./nestjs-backend/temp:/app/temp
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     rabbitmq:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - stock-manager-network
+  #   command: npm run start:dev
 
 volumes:
   postgres_data:
