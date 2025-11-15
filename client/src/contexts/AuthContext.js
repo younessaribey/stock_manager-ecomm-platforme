@@ -120,8 +120,12 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000
       const response = await axios.post(endpoint, userData, { withCredentials: true });
       
       if (!isAdmin) {
-        localStorage.setItem('token', response.data.token);
-        setCurrentUser(response.data.user);
+        // Backend wraps response in data object
+        const token = response.data.data?.token || response.data.token;
+        const user = response.data.data?.user || response.data.user;
+        
+        localStorage.setItem('token', token);
+        setCurrentUser(user);
       } else {
         toast.success('Admin registration successful! Waiting for approval.');
         return { pendingApproval: true };
@@ -182,16 +186,20 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000
         response = await axios.post(endpoint, credentials, { withCredentials: true });
       }
       
+      // Extract token and user from response (backend wraps in data object)
+      const token = APP_CONFIG.DEMO_MODE ? response.data.token : response.data.data.token;
+      const user = APP_CONFIG.DEMO_MODE ? response.data.user : response.data.data.user;
+      
       // Store token in localStorage or sessionStorage based on rememberMe
       if (rememberMe) {
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', token);
         sessionStorage.removeItem('token');
       } else {
-        sessionStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('token', token);
         localStorage.removeItem('token');
       }
-      axios.defaults.headers.common.Authorization = `Bearer ${response.data.token}`;
-      setCurrentUser(response.data.user);
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      setCurrentUser(user);
       return { success: true };
     } catch (error) {
       const message = error.message || 'Login failed';
@@ -205,8 +213,12 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000
   const googleLogin = async (googleData) => {
     try {
       const response = await axios.post('/auth/google', googleData, { withCredentials: true });
-      localStorage.setItem('token', response.data.token);
-      setCurrentUser(response.data.user);
+      // Backend wraps response in data object
+      const token = response.data.data?.token || response.data.token;
+      const user = response.data.data?.user || response.data.user;
+      
+      localStorage.setItem('token', token);
+      setCurrentUser(user);
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Google login failed';
