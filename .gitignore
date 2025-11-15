@@ -137,3 +137,10 @@ public
 
 # Local scripts (optional)
 # *.local.sh
+
+# Interview preparation and explanation documents (personal use only)
+INTERVIEW*.md
+COMPLETE_EXPLANATION.md
+START_HERE.md
+ALL_DONE.md
+*_READY.md
