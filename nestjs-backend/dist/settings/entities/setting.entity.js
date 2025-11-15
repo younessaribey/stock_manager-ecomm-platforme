@@ -19,21 +19,13 @@ __decorate([
     __metadata("design:type", Number)
 ], Setting.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], Setting.prototype, "siteName", void 0);
+], Setting.prototype, "key", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)({ type: 'text' }),
     __metadata("design:type", String)
-], Setting.prototype, "contactEmail", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
-    __metadata("design:type", Number)
-], Setting.prototype, "itemsPerPage", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
-    __metadata("design:type", Number)
-], Setting.prototype, "lowStockThreshold", void 0);
+], Setting.prototype, "value", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

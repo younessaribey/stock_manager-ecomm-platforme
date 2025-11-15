@@ -22,16 +22,19 @@ exports.RabbitMQModule = RabbitMQModule = __decorate([
                 {
                     name: 'RABBITMQ_SERVICE',
                     imports: [config_1.ConfigModule],
-                    useFactory: (configService) => ({
-                        transport: microservices_1.Transport.RMQ,
-                        options: {
-                            urls: [configService.get('RABBITMQ_URL', 'amqp://admin:admin123@localhost:5672')],
-                            queue: 'stock_manager_queue',
-                            queueOptions: {
-                                durable: true,
+                    useFactory: (configService) => {
+                        const rabbitMqUrl = configService.get('RABBITMQ_URL', 'amqp://admin:admin123@localhost:5672');
+                        return {
+                            transport: microservices_1.Transport.RMQ,
+                            options: {
+                                urls: [rabbitMqUrl],
+                                queue: 'stock_manager_queue',
+                                queueOptions: {
+                                    durable: true,
+                                },
                             },
-                        },
-                    }),
+                        };
+                    },
                     inject: [config_1.ConfigService],
                 },
             ]),

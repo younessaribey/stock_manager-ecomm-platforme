@@ -34,17 +34,7 @@ let TypeOrmConfigService = class TypeOrmConfigService {
             username: this.configService.get('DB_USER', 'postgres'),
             password: this.configService.get('DB_PASSWORD', 'postgres'),
             database: this.configService.get('DB_NAME', 'stmg'),
-            entities: [
-                user_entity_1.User,
-                product_entity_1.Product,
-                category_entity_1.Category,
-                order_entity_1.Order,
-                order_item_entity_1.OrderItem,
-                cart_entity_1.Cart,
-                wishlist_entity_1.Wishlist,
-                setting_entity_1.Setting,
-                imgbb_image_entity_1.ImgBBImage,
-            ],
+            entities: [user_entity_1.User, product_entity_1.Product, category_entity_1.Category, order_entity_1.Order, order_item_entity_1.OrderItem, cart_entity_1.Cart, wishlist_entity_1.Wishlist, setting_entity_1.Setting, imgbb_image_entity_1.ImgBBImage],
             synchronize: !isProduction,
             logging: !isProduction,
             ssl: isProduction

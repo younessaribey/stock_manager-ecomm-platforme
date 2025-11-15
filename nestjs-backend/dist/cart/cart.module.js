@@ -21,11 +21,7 @@ let CartModule = class CartModule {
 exports.CartModule = CartModule;
 exports.CartModule = CartModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([cart_entity_1.Cart, user_entity_1.User, product_entity_1.Product]),
-            users_module_1.UsersModule,
-            products_module_1.ProductsModule,
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([cart_entity_1.Cart, user_entity_1.User, product_entity_1.Product]), users_module_1.UsersModule, products_module_1.ProductsModule],
         controllers: [cart_controller_1.CartController],
         providers: [cart_service_1.CartService],
     })

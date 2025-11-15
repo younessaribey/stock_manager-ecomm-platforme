@@ -1,9 +1,7 @@
 export declare class Setting {
     id: number;
-    siteName: string;
-    contactEmail: string;
-    itemsPerPage: number;
-    lowStockThreshold: number;
+    key: string;
+    value: string;
     createdAt: Date;
     updatedAt: Date;
 }

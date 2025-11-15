@@ -10,12 +10,17 @@ exports.ImagesModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const imgbb_image_entity_1 = require("./entities/imgbb-image.entity");
+const images_service_1 = require("./images.service");
+const images_controller_1 = require("./images.controller");
 let ImagesModule = class ImagesModule {
 };
 exports.ImagesModule = ImagesModule;
 exports.ImagesModule = ImagesModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([imgbb_image_entity_1.ImgBBImage])],
+        controllers: [images_controller_1.ImagesController],
+        providers: [images_service_1.ImagesService],
+        exports: [images_service_1.ImagesService],
     })
 ], ImagesModule);
 //# sourceMappingURL=images.module.js.map

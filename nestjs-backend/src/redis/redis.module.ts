@@ -21,11 +21,9 @@ import { RedisService } from './redis.service';
     // Configure cache manager with Redis
     CacheModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const redisHost = configService.get<string>('REDIS_HOST', 'localhost');
-        const redisPort = configService.get<number>('REDIS_PORT', 6379);
-        const redisPassword = configService.get<string>('REDIS_PASSWORD', '');
-
+      useFactory: async (_configService: ConfigService) => {
+        // Redis configuration is handled in RedisService
+        // Cache manager uses memory store as fallback
         return {
           store: 'memory', // Fallback to memory if Redis not available
           ttl: 300, // Default TTL: 5 minutes

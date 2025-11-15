@@ -17,12 +17,8 @@ let HttpExceptionFilter = HttpExceptionFilter_1 = class HttpExceptionFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
-        const status = exception instanceof common_1.HttpException
-            ? exception.getStatus()
-            : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        const message = exception instanceof common_1.HttpException
-            ? exception.getResponse()
-            : 'Internal server error';
+        const status = exception instanceof common_1.HttpException ? exception.getStatus() : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        const message = exception instanceof common_1.HttpException ? exception.getResponse() : 'Internal server error';
         const errorResponse = {
             success: false,
             statusCode: status,
@@ -32,10 +28,10 @@ let HttpExceptionFilter = HttpExceptionFilter_1 = class HttpExceptionFilter {
             message: typeof message === 'string'
                 ? message
                 : message.message || 'An error occurred',
-            ...(typeof message === 'object' && message.error
-                ? { error: message.error }
-                : {}),
         };
+        if (typeof message === 'object' && message.error) {
+            errorResponse.error = message.error;
+        }
         if (status >= 500) {
             this.logger.error(`${request.method} ${request.url}`, exception instanceof Error ? exception.stack : JSON.stringify(exception));
         }

@@ -54,9 +54,7 @@ exports.AppModule = AppModule = __decorate([
             news_module_1.NewsModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [
-            app_service_1.AppService,
-        ],
+        providers: [app_service_1.AppService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

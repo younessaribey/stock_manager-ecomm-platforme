@@ -53,7 +53,8 @@ export class AuthService {
     const token = this.generateToken(user);
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userWithoutPassword } = user;
 
     return {
       user: userWithoutPassword,
@@ -84,7 +85,8 @@ export class AuthService {
     const token = this.generateToken(user);
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...userWithoutPassword } = user;
 
     return {
       user: userWithoutPassword,
@@ -96,7 +98,7 @@ export class AuthService {
    * Generate JWT token
    * Similar to your generateToken function
    */
-  private generateToken(user: any): string {
+  private generateToken(user: { id: number; email: string; role: string }): string {
     const payload = {
       id: user.id,
       email: user.email,

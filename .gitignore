@@ -1,2 +1,139 @@
-node_modules
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
 
+# Build output
+dist/
+build/
+*.tsbuildinfo
+nestjs-backend/dist/
+client/build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+nestjs-backend/.env
+client/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Temp files
+temp/
+tmp/
+*.tmp
+.temp/
+
+# Uploads (local development)
+uploads/
+nestjs-backend/uploads/
+server/uploads/
+
+# Compiled
+*.js.map
+*.d.ts.map
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn
+.yarn-integrity
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Next.js
+.next/
+out/
+
+# Nuxt.js
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# VuePress
+.vuepress/dist
+
+# Serverless
+.serverless/
+
+# FuseBox
+.fusebox/
+
+# DynamoDB Local
+.dynamodb/
+
+# TernJS
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Archived files (keep in repo but ignore if recreated)
+# archived/
+
+# Screenshots (optional, uncomment if you don't want to track)
+# screenshots/
+# .playwright-mcp/
+
+# Local scripts (optional)
+# *.local.sh

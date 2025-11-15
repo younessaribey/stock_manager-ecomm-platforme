@@ -35,7 +35,7 @@ let AuthService = class AuthService {
             approved: false,
         });
         const token = this.generateToken(user);
-        const { password: _, ...userWithoutPassword } = user;
+        const { password: _password, ...userWithoutPassword } = user;
         return {
             user: userWithoutPassword,
             token,
@@ -52,7 +52,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const token = this.generateToken(user);
-        const { password: _, ...userWithoutPassword } = user;
+        const { password: _password, ...userWithoutPassword } = user;
         return {
             user: userWithoutPassword,
             token,

@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * This method is called after token is validated
    * Return value becomes req.user in controllers
    */
-  async validate(payload: any) {
+  async validate(payload: { id: number; email: string; role: string }) {
     const user = await this.usersService.findOne(payload.id);
     if (!user) {
       throw new UnauthorizedException();

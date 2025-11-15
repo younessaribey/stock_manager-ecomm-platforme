@@ -17,20 +17,33 @@ import { RedisService } from '../../redis/redis.service';
 
 export const RATE_LIMIT_KEY = 'rateLimit';
 export const RateLimit = (maxRequests: number, windowSeconds: number) => {
-  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-    Reflector.prototype.get = function (key: string) {
-      return { maxRequests, windowSeconds };
-    };
-  };
+  return Reflector.createDecorator<{ maxRequests: number; windowSeconds: number }>()({
+    maxRequests,
+    windowSeconds,
+  });
 };
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
-  constructor(private redisService: RedisService) {}
+  constructor(
+    private redisService: RedisService,
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const ip = request.ip || request.connection.remoteAddress;
+
+    // Get rate limit configuration from decorator
+    const rateLimitConfig = this.reflector.get<{ maxRequests: number; windowSeconds: number }>(
+      RATE_LIMIT_KEY,
+      context.getHandler(),
+    );
+
+    // Default values if no decorator
+    const maxRequests = rateLimitConfig?.maxRequests ?? 100;
+    const windowSeconds = rateLimitConfig?.windowSeconds ?? 60;
+
     const key = `rate_limit:${ip}`;
 
     // Get current count
@@ -38,17 +51,16 @@ export class RateLimitGuard implements CanActivate {
 
     // Set expiration on first request
     if (count === 1) {
-      await this.redisService.expire(key, 60); // 1 minute window
+      await this.redisService.expire(key, windowSeconds);
     }
 
-    // Check limit (default: 100 requests per minute)
-    const maxRequests = 100;
+    // Check limit
     if (count > maxRequests) {
       throw new HttpException(
         {
           success: false,
           message: 'Too many requests, please try again later',
-          retryAfter: 60,
+          retryAfter: windowSeconds,
         },
         HttpStatus.TOO_MANY_REQUESTS,
       );

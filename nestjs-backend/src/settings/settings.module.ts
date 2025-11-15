@@ -1,14 +1,13 @@
-/**
- * STEP 6: Settings Module (Skeleton)
- */
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Setting } from './entities/setting.entity';
-// TODO: Create SettingsService and SettingsController
+import { SettingsService } from './settings.service';
+import { SettingsController } from './settings.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Setting])],
-  // TODO: Add controllers and providers
+  controllers: [SettingsController],
+  providers: [SettingsService],
+  exports: [SettingsService],
 })
 export class SettingsModule {}

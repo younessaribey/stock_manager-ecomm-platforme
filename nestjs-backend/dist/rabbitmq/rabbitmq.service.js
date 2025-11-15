@@ -11,21 +11,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var RabbitMQService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RabbitMQService = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const rxjs_1 = require("rxjs");
-let RabbitMQService = class RabbitMQService {
+let RabbitMQService = RabbitMQService_1 = class RabbitMQService {
     constructor(client) {
         this.client = client;
+        this.logger = new common_1.Logger(RabbitMQService_1.name);
     }
     async sendMessage(pattern, data) {
         try {
             return await (0, rxjs_1.firstValueFrom)(this.client.send(pattern, data));
         }
         catch (error) {
-            console.error('RabbitMQ error:', error);
+            this.logger.error(`RabbitMQ send error for pattern ${pattern}:`, error);
             throw error;
         }
     }
@@ -34,7 +36,7 @@ let RabbitMQService = class RabbitMQService {
             this.client.emit(pattern, data);
         }
         catch (error) {
-            console.error('RabbitMQ emit error:', error);
+            this.logger.error(`RabbitMQ emit error for pattern ${pattern}:`, error);
             throw error;
         }
     }
@@ -46,7 +48,7 @@ let RabbitMQService = class RabbitMQService {
     }
 };
 exports.RabbitMQService = RabbitMQService;
-exports.RabbitMQService = RabbitMQService = __decorate([
+exports.RabbitMQService = RabbitMQService = RabbitMQService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('RABBITMQ_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])

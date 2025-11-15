@@ -12,13 +12,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var RedisService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RedisService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const cache_manager_1 = require("@nestjs/cache-manager");
-const cache_manager_2 = require("cache-manager");
 const redis_1 = require("redis");
 let RedisService = RedisService_1 = class RedisService {
     constructor(cacheManager, configService) {
@@ -142,6 +140,6 @@ exports.RedisService = RedisService;
 exports.RedisService = RedisService = RedisService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)(cache_manager_1.CACHE_MANAGER)),
-    __metadata("design:paramtypes", [typeof (_a = typeof cache_manager_2.Cache !== "undefined" && cache_manager_2.Cache) === "function" ? _a : Object, config_1.ConfigService])
+    __metadata("design:paramtypes", [Object, config_1.ConfigService])
 ], RedisService);
 //# sourceMappingURL=redis.service.js.map

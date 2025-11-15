@@ -30,18 +30,34 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException ? exception.getResponse() : 'Internal server error';
 
-    const errorResponse = {
+    interface ErrorMessage {
+      message?: string;
+      error?: string | string[];
+    }
+
+    const errorResponse: {
+      success: boolean;
+      statusCode: number;
+      timestamp: string;
+      path: string;
+      method: string;
+      message: string;
+      error?: string | string[];
+    } = {
       success: false,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
       message:
-        typeof message === 'string' ? message : (message as any).message || 'An error occurred',
-      ...(typeof message === 'object' && (message as any).error
-        ? { error: (message as any).error }
-        : {}),
+        typeof message === 'string'
+          ? message
+          : (message as ErrorMessage).message || 'An error occurred',
     };
+
+    if (typeof message === 'object' && (message as ErrorMessage).error) {
+      errorResponse.error = (message as ErrorMessage).error;
+    }
 
     // Log error
     if (status >= 500) {

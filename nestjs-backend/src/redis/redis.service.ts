@@ -84,6 +84,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
    * Set value in cache
    * Best Practice: Use TTL for automatic expiration
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async set(key: string, value: any, ttl?: number): Promise<void> {
     try {
       await this.cacheManager.set(key, value, ttl || 300); // Default 5 minutes

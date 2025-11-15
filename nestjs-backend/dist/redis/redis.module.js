@@ -20,10 +20,7 @@ exports.RedisModule = RedisModule = __decorate([
         imports: [
             cache_manager_1.CacheModule.registerAsync({
                 imports: [config_1.ConfigModule],
-                useFactory: async (configService) => {
-                    const redisHost = configService.get('REDIS_HOST', 'localhost');
-                    const redisPort = configService.get('REDIS_PORT', 6379);
-                    const redisPassword = configService.get('REDIS_PASSWORD', '');
+                useFactory: async (_configService) => {
                     return {
                         store: 'memory',
                         ttl: 300,

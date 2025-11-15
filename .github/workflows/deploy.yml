@@ -1,0 +1,75 @@
+name: Deploy to DigitalOcean
+
+on:
+  workflow_dispatch:  # Manual trigger
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.DIGITALOCEAN_SSH_KEY }}
+      
+      - name: Add DigitalOcean to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.DIGITALOCEAN_IP }} >> ~/.ssh/known_hosts
+      
+      - name: Deploy to DigitalOcean
+        env:
+          DO_IP: ${{ secrets.DIGITALOCEAN_IP }}
+          DO_USER: ${{ secrets.DIGITALOCEAN_USER }}
+        run: |
+          ssh ${DO_USER}@${DO_IP} << 'ENDSSH'
+            cd /root/stock-manager
+            
+            echo "📥 Pulling latest code..."
+            git pull origin main
+            
+            echo "🛑 Stopping services..."
+            docker-compose -f docker-compose.prod.yml down
+            
+            echo "🔨 Building new images..."
+            docker-compose -f docker-compose.prod.yml build --no-cache
+            
+            echo "🚀 Starting services..."
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 30
+            
+            echo "✅ Checking service health..."
+            docker-compose -f docker-compose.prod.yml ps
+            
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+            
+            echo "✅ Deployment complete!"
+          ENDSSH
+      
+      - name: Verify deployment
+        env:
+          DO_IP: ${{ secrets.DIGITALOCEAN_IP }}
+        run: |
+          echo "🔍 Testing API health endpoint..."
+          sleep 10
+          curl -f http://${DO_IP}:3000/api/health || exit 1
+          echo "✅ API is responding!"
+      
+      - name: Deployment success
+        run: |
+          echo "🎉 Deployment successful!"
+          echo "🌐 API URL: http://${{ secrets.DIGITALOCEAN_IP }}:3000/api"
+

@@ -18,6 +18,7 @@ export class CacheInterceptor implements NestInterceptor {
     private reflector: Reflector,
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const cacheKey = this.reflector.get<string>(CACHE_KEY, context.getHandler());
     const cacheTtl = this.reflector.get<number>(CACHE_TTL, context.getHandler());

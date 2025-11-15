@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getManager } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class OrdersService {
@@ -13,6 +12,7 @@ export class OrdersService {
     private orderRepository: Repository<Order>,
     @InjectRepository(OrderItem)
     private orderItemRepository: Repository<OrderItem>,
+    private dataSource: DataSource,
   ) {}
 
   async create(userId: number, createOrderDto: CreateOrderDto): Promise<Order> {
@@ -31,21 +31,31 @@ export class OrdersService {
       status: 'pending',
     });
 
-    await getManager().transaction(async (transactionalEntityManager) => {
-      const savedOrder = await transactionalEntityManager.save(order);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const savedOrder = await queryRunner.manager.save(Order, order);
 
       for (const item of orderItems) {
         const orderItem = this.orderItemRepository.create({
           orderId: savedOrder.id,
           productId: item.productId,
           quantity: item.quantity,
-          price: 10, // Placeholder price
+          productPrice: 10, // Placeholder price
         });
-        await transactionalEntityManager.save(orderItem);
+        await queryRunner.manager.save(OrderItem, orderItem);
       }
-    });
 
-    return order;
+      await queryRunner.commitTransaction();
+      return savedOrder;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findAll(userId: number): Promise<Order[]> {

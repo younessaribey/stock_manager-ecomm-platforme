@@ -1,16 +1,13 @@
-/**
- * STEP 6: Categories Module (Skeleton)
- *
- * Complete this following the same pattern as ProductsModule
- */
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
-// TODO: Create CategoriesService and CategoriesController
+import { CategoriesService } from './categories.service';
+import { CategoriesController } from './categories.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category])],
-  // TODO: Add controllers and providers
+  controllers: [CategoriesController],
+  providers: [CategoriesService],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

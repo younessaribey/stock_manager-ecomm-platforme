@@ -1,13 +1,13 @@
-/**
- * STEP 6: Dashboard Module (Skeleton)
- */
-
 import { Module } from '@nestjs/common';
-// TODO: Create DashboardService and DashboardController
-// Dashboard might aggregate data from multiple modules
+import { DashboardService } from './dashboard.service';
+import { DashboardController } from './dashboard.controller';
+import { ProductsModule } from '../products/products.module';
+import { OrdersModule } from '../orders/orders.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  // TODO: Import ProductsModule, OrdersModule, etc.
-  // TODO: Add controllers and providers
+  imports: [ProductsModule, OrdersModule, UsersModule],
+  controllers: [DashboardController],
+  providers: [DashboardService],
 })
 export class DashboardModule {}

@@ -30,7 +30,7 @@ let AuthController = class AuthController {
         return this.authService.login(loginDto);
     }
     async getCurrentUser(req) {
-        const { password, ...userWithoutPassword } = req.user;
+        const { password: _password, ...userWithoutPassword } = req.user;
         return userWithoutPassword;
     }
 };

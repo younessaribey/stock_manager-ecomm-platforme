@@ -18,7 +18,7 @@ let LoggingInterceptor = class LoggingInterceptor {
         const { method, url, ip } = request;
         const now = Date.now();
         return next.handle().pipe((0, operators_1.tap)({
-            next: (data) => {
+            next: (_data) => {
                 const response = context.switchToHttp().getResponse();
                 const { statusCode } = response;
                 const delay = Date.now() - now;

@@ -1,14 +1,13 @@
-/**
- * STEP 6: Images Module (Skeleton)
- */
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImgBBImage } from './entities/imgbb-image.entity';
-// TODO: Create ImagesService and ImagesController
+import { ImagesService } from './images.service';
+import { ImagesController } from './images.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ImgBBImage])],
-  // TODO: Add controllers and providers
+  controllers: [ImagesController],
+  providers: [ImagesService],
+  exports: [ImagesService],
 })
 export class ImagesModule {}

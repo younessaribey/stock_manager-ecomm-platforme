@@ -1,7 +1,3 @@
-/**
- * STEP 1: Setting Entity
- */
-
 import {
   Entity,
   Column,
@@ -15,17 +11,11 @@ export class Setting {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  siteName: string;
+  @Column({ unique: true })
+  key: string;
 
-  @Column({ nullable: true })
-  contactEmail: string;
-
-  @Column({ type: 'int', nullable: true })
-  itemsPerPage: number;
-
-  @Column({ type: 'int', nullable: true })
-  lowStockThreshold: number;
+  @Column({ type: 'text' })
+  value: string;
 
   @CreateDateColumn()
   createdAt: Date;

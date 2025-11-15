@@ -15,31 +15,33 @@ const core_1 = require("@nestjs/core");
 const redis_service_1 = require("../../redis/redis.service");
 exports.RATE_LIMIT_KEY = 'rateLimit';
 const RateLimit = (maxRequests, windowSeconds) => {
-    return (target, propertyKey, descriptor) => {
-        core_1.Reflector.prototype.get = function (key) {
-            return { maxRequests, windowSeconds };
-        };
-    };
+    return core_1.Reflector.createDecorator()({
+        maxRequests,
+        windowSeconds,
+    });
 };
 exports.RateLimit = RateLimit;
 let RateLimitGuard = class RateLimitGuard {
-    constructor(redisService) {
+    constructor(redisService, reflector) {
         this.redisService = redisService;
+        this.reflector = reflector;
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const ip = request.ip || request.connection.remoteAddress;
+        const rateLimitConfig = this.reflector.get(exports.RATE_LIMIT_KEY, context.getHandler());
+        const maxRequests = rateLimitConfig?.maxRequests ?? 100;
+        const windowSeconds = rateLimitConfig?.windowSeconds ?? 60;
         const key = `rate_limit:${ip}`;
         const count = await this.redisService.increment(key);
         if (count === 1) {
-            await this.redisService.expire(key, 60);
+            await this.redisService.expire(key, windowSeconds);
         }
-        const maxRequests = 100;
         if (count > maxRequests) {
             throw new common_1.HttpException({
                 success: false,
                 message: 'Too many requests, please try again later',
-                retryAfter: 60,
+                retryAfter: windowSeconds,
             }, common_1.HttpStatus.TOO_MANY_REQUESTS);
         }
         return true;
@@ -48,6 +50,7 @@ let RateLimitGuard = class RateLimitGuard {
 exports.RateLimitGuard = RateLimitGuard;
 exports.RateLimitGuard = RateLimitGuard = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [redis_service_1.RedisService])
+    __metadata("design:paramtypes", [redis_service_1.RedisService,
+        core_1.Reflector])
 ], RateLimitGuard);
 //# sourceMappingURL=rate-limit.guard.js.map

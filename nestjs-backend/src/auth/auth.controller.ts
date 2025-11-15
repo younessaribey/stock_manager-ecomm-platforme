@@ -59,7 +59,7 @@ export class AuthController {
   @Get('me')
   async getCurrentUser(@Request() req) {
     // req.user is set by JwtAuthGuard (from JWT strategy)
-    const { password, ...userWithoutPassword } = req.user;
+    const { password: _password, ...userWithoutPassword } = req.user;
     return userWithoutPassword;
   }
 }
