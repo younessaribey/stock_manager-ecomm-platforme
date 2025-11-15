@@ -1,8 +1,11 @@
 version: '3.8'
+
 services:
-  db:
-    image: postgres:15
-    restart: always
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: stock-manager-postgres-dev
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -10,24 +13,103 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stock-manager-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  backend:
-    build: ./server
-    restart: always
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: stock-manager-rabbitmq-dev
+    restart: unless-stopped
     environment:
-      - NODE_ENV=development
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=stmg
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_DEFAULT_VHOST: /
     ports:
-      - "5050:5050"
-    depends_on:
-      - db
+      - "5672:5672"      # AMQP port
+      - "15672:15672"    # Management UI
     volumes:
-      - ./server:/usr/src/app
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - stock-manager-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: stock-manager-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - stock-manager-network
+    command: redis-server --appendonly yes --requirepass redis123
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # NestJS Backend API (Development)
+  api:
+    build:
+      context: ./nestjs-backend
+      dockerfile: Dockerfile
+    container_name: stock-manager-api-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: stmg
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis123
+      JWT_SECRET: dev-secret-key-change-in-production
+      JWT_EXPIRE: 7d
+      CLIENT_URL: http://localhost:3000
+    volumes:
+      - ./nestjs-backend:/app
+      - /app/node_modules
+      - ./nestjs-backend/uploads:/app/uploads
+      - ./nestjs-backend/temp:/app/temp
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - stock-manager-network
+    command: npm run start:dev
 
 volumes:
-  db_data:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  stock-manager-network:
+    driver: bridge

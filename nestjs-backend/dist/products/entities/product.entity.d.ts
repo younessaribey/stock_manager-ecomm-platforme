@@ -1,0 +1,30 @@
+import { Category } from '../../categories/entities/category.entity';
+import { User } from '../../users/entities/user.entity';
+import { OrderItem } from '../../orders/entities/order-item.entity';
+import { Wishlist } from '../../wishlist/entities/wishlist.entity';
+import { Cart } from '../../cart/entities/cart.entity';
+export declare class Product {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+    imageUrl: string;
+    images: string;
+    imei: string;
+    condition: string;
+    storage: string;
+    color: string;
+    model: string;
+    batteryHealth: number;
+    status: string;
+    categoryId: number;
+    createdBy: number;
+    category: Category;
+    createdByUser: User;
+    orderItems: OrderItem[];
+    wishlists: Wishlist[];
+    carts: Cart[];
+    createdAt: Date;
+    updatedAt: Date;
+}
