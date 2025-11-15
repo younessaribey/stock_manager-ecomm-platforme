@@ -15,6 +15,14 @@ export class SettingsService {
     return this.settingsRepository.find();
   }
 
+  async getPublicSettings(): Promise<Record<string, string>> {
+    const settings = await this.settingsRepository.find();
+    return settings.reduce((acc, setting) => {
+      acc[setting.key] = setting.value;
+      return acc;
+    }, {} as Record<string, string>);
+  }
+
   async findByKey(key: string): Promise<Setting> {
     const setting = await this.settingsRepository.findOne({
       where: { key },

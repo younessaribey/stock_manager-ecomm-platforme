@@ -3,11 +3,18 @@ import { SettingsService } from './settings.service';
 import { UpdateSettingDto } from './dto/update-setting.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('settings')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
+
+  @Public()
+  @Get('public')
+  getPublicSettings() {
+    return this.settingsService.getPublicSettings();
+  }
 
   @Get()
   findAll() {
