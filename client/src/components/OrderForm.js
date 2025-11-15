@@ -64,7 +64,7 @@ const OrderForm = ({ product, onClose, onOrderSuccess }) => {
         // Close the form
         onClose();
       } else {
-        throw new Error(result.message || 'Erreur lors de la commande');
+        throw new Error(response.data?.message || 'Erreur lors de la commande');
       }
       
     } catch (error) {
