@@ -44,9 +44,21 @@ api.interceptors.request.use(
   }
 );
 
-// Add a response interceptor to handle common errors
+// Add a response interceptor to normalize success payloads and handle errors
 api.interceptors.response.use(
   (response) => {
+    // NestJS TransformInterceptor wraps payloads as { success, data, message }
+    if (
+      response &&
+      response.data &&
+      typeof response.data === 'object' &&
+      !Array.isArray(response.data) &&
+      Object.prototype.hasOwnProperty.call(response.data, 'data')
+    ) {
+      // Preserve original wrapper for callers that need meta (message, success, etc.)
+      response.meta = response.data;
+      response.data = response.data.data;
+    }
     return response;
   },
   (error) => {
