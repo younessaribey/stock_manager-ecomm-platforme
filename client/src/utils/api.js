@@ -18,12 +18,9 @@ const api = axios.create({
   baseURL: APP_CONFIG.API_URL,
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   },
   timeout: 10000,
-  withCredentials: false
+  withCredentials: false,
 });
 
 // Add a request interceptor to add auth token to every request

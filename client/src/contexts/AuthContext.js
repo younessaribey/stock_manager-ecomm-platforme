@@ -177,8 +177,8 @@ axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:3000
           }
         };
       } else {
-        // Use real API
-        const endpoint = isAdmin ? '/auth/login-admin' : '/auth/login';
+        // Use real API (single login endpoint, role-based on backend)
+        const endpoint = '/auth/login';
         response = await axios.post(endpoint, credentials, { withCredentials: true });
       }
       
