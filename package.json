@@ -5,16 +5,15 @@
   "main": "index.js",
   "scripts": {
     "client": "cd client && npm start",
-    "server": "cd server && npm run dev",
+    "server": "cd nestjs-backend && npm run start:dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-    "build": "cd client && npm run build && cd ../server && npm install --production",
+    "install-all": "npm install && cd client && npm install && cd ../nestjs-backend && npm install",
+    "build": "cd client && npm run build",
     "build:client": "cd client && npm run build",
-    "build:server": "cd server && npm install --production",
-    "start": "cd server && npm start",
-    "launch": "node start.js",
-    "quick-start": "node start.js",
-    "vercel-build": "npm run build"
+    "build:server": "cd nestjs-backend && npm run build",
+    "start": "cd nestjs-backend && npm run start:prod",
+    "test": "cd nestjs-backend && npm test",
+    "vercel-build": "cd client && npm install && npm run build"
   },
   "keywords": [
     "react",
