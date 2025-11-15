@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import { categoriesAPI, productsAPI } from '../../utils/api';
 import { FaArrowLeft, FaArrowRight, FaCheck, FaMobile, FaLaptop, FaTabletAlt, FaClock, FaPlug, FaGift, FaTag, FaBox, FaTruck, FaHeart, FaPlus, FaTimes, FaImage } from 'react-icons/fa';
 
 // Smart model database for different brands
@@ -291,7 +291,7 @@ const AddProductWizard = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:5050/api/categories');
+      const response = await categoriesAPI.getAll();
       const mainCats = response.data.filter(cat => !cat.parentId);
       setCategories(mainCats);
     } catch (error) {
@@ -304,7 +304,7 @@ const AddProductWizard = () => {
     setSelectedMainCategory(category);
     
     try {
-      const response = await axios.get('http://localhost:5050/api/categories');
+      const response = await categoriesAPI.getAll();
       const subs = response.data.filter(cat => cat.parentId === parseInt(categoryId));
       setSubcategories(subs);
     } catch (error) {
@@ -450,12 +450,7 @@ const AddProductWizard = () => {
         totalImages: values.productImages ? values.productImages.length : 0
       });
 
-      await axios.post('http://localhost:5050/api/products', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      await productsAPI.createWithImage(formData);
 
       console.log('✅ Product created successfully!');
       alert('🎉 Product added successfully!');

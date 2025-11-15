@@ -5,6 +5,7 @@ import { FaPhone, FaMapMarkerAlt, FaUser, FaShoppingBag, FaTimes } from 'react-i
 import { toast } from 'react-toastify';
 import { algeriaWilayas } from '../utils/algeriaWilayas';
 import { getUploadedImageUrl } from '../utils/imageUtils';
+import api from '../utils/api';
 
 const OrderForm = ({ product, onClose, onOrderSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
@@ -50,22 +51,14 @@ const OrderForm = ({ product, onClose, onOrderSuccess }) => {
       };
 
       // Send order to backend
-      const response = await fetch('http://localhost:5050/api/algeria-orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData)
-      });
+      const response = await api.post('/algeria-orders', orderData);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (response.status === 201 || response.status === 200) {
         toast.success('Commande passée avec succès! Nous vous contacterons bientôt.');
         
         // Call success callback
         if (onOrderSuccess) {
-          onOrderSuccess(result.order);
+          onOrderSuccess(response.data?.order);
         }
         
         // Close the form

@@ -10,13 +10,15 @@
  * 3. For demo: data will be stored in browser localStorage
  */
 
+const envDemoValue = process.env.REACT_APP_DEMO_MODE?.toLowerCase();
+const isDemoMode = envDemoValue ? envDemoValue === 'true' : false; // default to real backend locally
+
 const APP_CONFIG = {
   // Set to true for portfolio demo (localStorage), false for production (database)
-  // Environment variable REACT_APP_DEMO_MODE can override this (use "true" or "false")
-  DEMO_MODE: process.env.REACT_APP_DEMO_MODE === 'false' ? false : true, // Default to true for Vercel deployments
+  DEMO_MODE: isDemoMode,
   
   // API URL (only used when DEMO_MODE is false)
-  API_URL: process.env.REACT_APP_API_URL || 'http://localhost:5050/api',
+  API_URL: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
   
   // Default admin credentials for demo mode
   DEMO_ADMIN: {

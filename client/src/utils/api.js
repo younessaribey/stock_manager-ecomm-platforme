@@ -75,7 +75,7 @@ export const productsAPI = APP_CONFIG.DEMO_MODE ? demoProductsAPI : {
       }
     });
   },
-  update: (id, productData) => api.put(`/products/${id}`, productData),
+  update: (id, productData) => api.patch(`/products/${id}`, productData),
   updateWithImage: (id, formData) => {
     return api.put(`/products/${id}`, formData, {
       headers: {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEye, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaBox, FaCheck, FaTimes, FaClock, FaTruck, FaCheckCircle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import api from '../../utils/api';
 
 const AlgeriaOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -16,13 +17,8 @@ const AlgeriaOrders = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5050/api/algeria-orders');
-      if (response.ok) {
-        const data = await response.json();
-        setOrders(data);
-      } else {
-        throw new Error('Failed to fetch orders');
-      }
+      const response = await api.get('/algeria-orders');
+      setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
       toast.error('Failed to load orders');
@@ -34,22 +30,12 @@ const AlgeriaOrders = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5050/api/algeria-orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      await api.put(`/algeria-orders/${orderId}/status`, { status: newStatus });
 
-      if (response.ok) {
-        toast.success('Order status updated successfully');
-        fetchOrders(); // Refresh orders list
-        if (selectedOrder && selectedOrder.id === orderId) {
-          setSelectedOrder({ ...selectedOrder, status: newStatus });
-        }
-      } else {
-        throw new Error('Failed to update order status');
+      toast.success('Order status updated successfully');
+      fetchOrders(); // Refresh orders list
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, status: newStatus });
       }
     } catch (error) {
       console.error('Error updating order status:', error);

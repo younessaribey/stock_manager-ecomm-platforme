@@ -1,6 +1,9 @@
 // Image utility functions for random image selection and cycling
 import { useState, useEffect } from 'react';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+const API_BASE = API_URL.replace(/\/api$/, '');
+
 /**
  * Get uploaded image URL with proper formatting
  * @param {string} imageUrl - Image URL from database
@@ -16,11 +19,11 @@ export const getUploadedImageUrl = (imageUrl) => {
   
   // If it's a relative path, prepend the server URL
   if (imageUrl.startsWith('/')) {
-    return `http://localhost:5050${imageUrl}`;
+    return `${API_BASE}${imageUrl}`;
   }
   
   // If it's just a filename, prepend the resources path
-  return `http://localhost:5050/resources/images/${imageUrl}`;
+  return `${API_BASE}/resources/images/${imageUrl}`;
 };
 
 /**

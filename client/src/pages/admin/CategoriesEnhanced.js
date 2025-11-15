@@ -21,7 +21,7 @@ import {
 import { toast } from 'react-toastify';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import { categoriesAPI } from '../../utils/api';
 
 const CategoriesEnhanced = () => {
   const [categories, setCategories] = useState([]);
@@ -36,11 +36,7 @@ const CategoriesEnhanced = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5050/api/categories', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
-      });
+      const response = await categoriesAPI.getAll();
       
       console.log('Categories API response:', response.data);
       setCategories(response.data);
@@ -100,15 +96,11 @@ const CategoriesEnhanced = () => {
   // Handle main category creation
   const handleCreateMainCategory = async (values, { resetForm }) => {
     try {
-      await axios.post('http://localhost:5050/api/categories', {
+      await categoriesAPI.create({
         name: values.name,
         description: values.description || '',
         level: 0,
         isActive: true
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
       });
       
       toast.success('Main category created successfully');
@@ -123,15 +115,11 @@ const CategoriesEnhanced = () => {
   // Handle subcategory creation
   const handleCreateSubcategory = async (values, { resetForm }) => {
     try {
-      await axios.post('http://localhost:5050/api/categories', {
+      await categoriesAPI.create({
         name: values.name,
         parentId: addingSubcategory,
         level: 1,
         isActive: true
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
       });
       
       toast.success('Subcategory created successfully');
@@ -147,14 +135,10 @@ const CategoriesEnhanced = () => {
   // Handle category update
   const handleUpdateCategory = async (values) => {
     try {
-      await axios.put(`http://localhost:5050/api/categories/${editingCategory.id}`, {
+      await categoriesAPI.update(editingCategory.id, {
         name: values.name,
         description: values.description || '',
         isActive: values.isActive
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
       });
       
       toast.success('Category updated successfully');
@@ -169,11 +153,7 @@ const CategoriesEnhanced = () => {
   // Handle category deletion
   const handleDeleteCategory = async (categoryId) => {
     try {
-      await axios.delete(`http://localhost:5050/api/categories/${categoryId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
-      });
+      await categoriesAPI.delete(categoryId);
       
       toast.success('Category deleted successfully');
       setConfirmDelete(null);
@@ -187,13 +167,9 @@ const CategoriesEnhanced = () => {
   // Toggle category active status
   const toggleCategoryStatus = async (category) => {
     try {
-      await axios.put(`http://localhost:5050/api/categories/${category.id}`, {
+      await categoriesAPI.update(category.id, {
         ...category,
         isActive: !category.isActive
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`
-        }
       });
       
       toast.success(`Category ${category.isActive ? 'deactivated' : 'activated'} successfully`);

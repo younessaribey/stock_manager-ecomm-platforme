@@ -4,7 +4,6 @@ import { productsAPI, categoriesAPI } from '../../utils/api';
 import { getUploadedImageUrl } from '../../utils/imageUtils';
 import { FaPlus, FaSearch, FaFilter, FaEdit, FaTrash, FaExclamationTriangle, FaMobile, FaClock, FaBoxes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -148,17 +147,7 @@ const Products = () => {
   // Handle status change
   const handleStatusChange = async (productId, newStatus) => {
     try {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
-      await axios.patch(`http://localhost:5050/api/products/${productId}`, 
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      await productsAPI.update(productId, { status: newStatus });
       
       // Update local state
       setProducts(products.map(product => 

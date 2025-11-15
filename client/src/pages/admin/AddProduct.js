@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { FaSave, FaImage, FaArrowLeft, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { productsAPI, categoriesAPI } from '../../utils/api';
+import APP_CONFIG from '../../config/appConfig';
 
 const AddProduct = () => {
   const { id } = useParams(); // If id exists, we're editing an existing product
@@ -131,9 +132,10 @@ const AddProduct = () => {
           
           // Set image preview if product has an image
           if (productData.imageUrl) {
+            const apiBase = APP_CONFIG.API_URL.replace(/\/api$/, '');
             const imageUrl = productData.imageUrl.startsWith('http') 
               ? productData.imageUrl 
-              : `http://localhost:5050${productData.imageUrl}`;
+              : `${apiBase}${productData.imageUrl}`;
             setImagePreview(imageUrl);
           }
           setLoading(false);
