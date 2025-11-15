@@ -32,7 +32,7 @@ docker compose up -d
 ```
 
 This starts:
-- PostgreSQL (port 5433)
+- PostgreSQL (port 5434)
 - Redis (port 6379)
 - RabbitMQ (ports 5672, 15672)
 
@@ -68,7 +68,7 @@ cat > nestjs-backend/.env << 'EOF'
 NODE_ENV=development
 PORT=3000
 DB_HOST=localhost
-DB_PORT=5433
+DB_PORT=5434
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=stmg
@@ -135,7 +135,7 @@ curl http://localhost:3000/api/products/public
 ### What Runs Where
 
 **Docker Services (docker compose):**
-- PostgreSQL database on port 5433
+- PostgreSQL database on port 5434
 - Redis cache on port 6379
 - RabbitMQ message broker on ports 5672, 15672
 
@@ -176,7 +176,7 @@ Backend services run in Docker to:
 
 **Problem:** PostgreSQL port 5432 was already in use by Mac's local PostgreSQL.
 
-**Solution:** Changed Docker PostgreSQL external port to 5433.
+**Solution:** Changed Docker PostgreSQL external port to 5434.
 
 ---
 

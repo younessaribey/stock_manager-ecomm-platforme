@@ -17,7 +17,7 @@ docker compose up -d
 ```
 
 This starts:
-- ✅ PostgreSQL (port 5433)
+- ✅ PostgreSQL (port 5434)
 - ✅ Redis (port 6379)
 - ✅ RabbitMQ (ports 5672, 15672)
 
@@ -219,7 +219,7 @@ cat > /Users/mac/Desktop/stock_manager-ecomm-platforme/nestjs-backend/.env << 'E
 NODE_ENV=development
 PORT=3000
 DB_HOST=localhost
-DB_PORT=5433
+DB_PORT=5434
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=stmg

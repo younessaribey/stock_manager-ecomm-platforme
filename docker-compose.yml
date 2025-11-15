@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: stmg
     ports:
-      - "5433:5432"  # External port 5433, internal port 5432 (avoids conflict with Mac PostgreSQL on 5432)
+      - "5434:5432"  # External port 5434, internal port 5432 (avoids conflict with Mac PostgreSQL running on 5432/5433)
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
