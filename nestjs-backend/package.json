@@ -17,11 +17,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage --passWithNoTests",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:unit": "jest --passWithNoTests --testPathIgnorePatterns=integration",
+    "test:integration": "jest --testNamePattern='Integration' --testPathPattern=integration",
     "test:e2e": "jest --config ./test/jest-e2e.json --passWithNoTests",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d src/config/typeorm.config.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/config/typeorm.config.ts",
-    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.config.ts"
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/config/typeorm.config.ts",
+    "seed:categories": "ts-node -r tsconfig-paths/register src/categories/seeds/seed-categories.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^3.0.1",

@@ -13,7 +13,8 @@
     "build:server": "cd nestjs-backend && npm run build",
     "start": "cd nestjs-backend && npm run start:prod",
     "test": "cd nestjs-backend && npm test",
-    "vercel-build": "cd client && npm install && npm run build"
+    "vercel-build": "cd client && npm install && npm run build",
+    "journal": "bash scripts/journal.sh"
   },
   "keywords": [
     "react",

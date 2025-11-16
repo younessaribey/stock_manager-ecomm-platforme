@@ -14,7 +14,14 @@ export class CategoriesService {
 
   async findAll(): Promise<Category[]> {
     return this.categoriesRepository.find({
-      order: { name: 'ASC' },
+      relations: ['subcategories'],
+      order: {
+        level: 'ASC',
+        name: 'ASC',
+        subcategories: {
+          name: 'ASC',
+        },
+      },
     });
   }
 
