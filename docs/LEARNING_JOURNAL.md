@@ -71,10 +71,13 @@ docker compose up -d
 ## 2025-11-12
 
 **What I tackled**
-- Finished the Express → NestJS migration: defined TypeORM entities for users/products/orders/etc., wired DTO validation, and split features into modules (auth, products, categories, orders, wishlist, settings, news, dashboard).
-- Implemented global guards/interceptors/pipes (JWT auth, admin guard, LoggingInterceptor, TransformInterceptor, ValidationPipe) plus reusable decorators like `@Public()` and cache/rate-limit helpers.
-- Added Redis integration (cache module + `RedisService` wrapper) and wrote unit/integration tests for `ProductsService` to confirm caching + invalidation behave with a real Redis instance.
-- Built CI/CD foundations: GitHub Actions workflow running lint/test/build, Docker build, and a deployment workflow targeting DigitalOcean. Documented the process in `docs/CI_CD_EXPLAINED.md`, `docs/COMMIT_GUIDE.md`, and `SETUP_CICD.md`.
+- **Express → NestJS migration**: Converted Sequelize models to TypeORM entities (User, Product, Category, Order, OrderItem, Cart, Wishlist, Setting, ImgBBImage, News). Mapped Express routes to NestJS controllers with proper DTOs for validation.
+- **Architecture improvements**: Split monolithic Express server into NestJS modules (AuthModule, ProductsModule, CategoriesModule, OrdersModule, CartModule, WishlistModule, DashboardModule, SettingsModule, ImagesModule, NewsModule). Each module encapsulates its own controller, service, and repository.
+- **Security & middleware**: Implemented JWT authentication with Passport strategy, role-based guards (JwtAuthGuard, AdminGuard), and global interceptors (LoggingInterceptor for request/response logging, TransformInterceptor for consistent API responses, CacheInterceptor for Redis integration).
+- **Redis integration**: Added `RedisModule` with graceful degradation (falls back to memory cache if Redis unavailable). Implemented cache-aside pattern in `ProductsService` with automatic invalidation on updates.
+- **Testing infrastructure**: Created unit tests (`products.service.spec.ts`, `auth.service.spec.ts`) with mocked dependencies, integration tests (`products.integration.spec.ts`) with real Redis, and E2E tests (`app.e2e-spec.ts`) with Supertest.
+- **CI/CD setup**: GitHub Actions workflows for automated linting, testing, building, and Docker image creation. Added deployment workflow for DigitalOcean with SSH-based deployment. Documented in `docs/CI_CD_EXPLAINED.md` and `docs/COMMIT_GUIDE.md`.
+- **Code quality**: Configured ESLint + Prettier for TypeScript, added conventional commit guidelines, and cleaned up 42+ outdated documentation files into an `archived/` folder.
 
 **Key commands**
 ```bash
@@ -86,10 +89,22 @@ cd nestjs-backend && npm run migration:generate -- src/migrations/<name>
 cd nestjs-backend && npm run migration:run
 ```
 
+**Debugging approach during migration**
+1. Started by analyzing Express `server/config/dbSequelize.js` to understand existing Sequelize models
+2. Created TypeORM entities matching Sequelize schema (column types, relations, indexes)
+3. Ported Express routes one-by-one to NestJS controllers, testing each with `curl` before moving on
+4. Hit ESLint errors for unused variables in destructuring → fixed with `_password` naming convention
+5. TypeScript complained about `any` types in decorators → added `// eslint-disable-next-line` comments
+6. Missing `@nestjs/mapped-types` package broke build → installed it for `PartialType` in DTOs
+7. RabbitMQ type mismatch → explicitly typed `useFactory` return as `RmqOptions`
+8. Dashboard service errors → corrected `p.stock` to `p.quantity`, `order.totalAmount` to `order.total`
+9. Integration tests failed with missing `DataSource` → added mock provider to test module
+
 **Lessons learned**
-- NestJS’s global `TransformInterceptor` makes the API responses feel premium, but every client (tests, frontend, HTTP files) must expect the `{ success, data, message }` envelope.
+- NestJS's global `TransformInterceptor` makes the API responses feel premium, but every client (tests, frontend, HTTP files) must expect the `{ success, data, message }` envelope.
 - Keeping modules small (ProductsModule, CategoriesModule, etc.) plus `TypeOrmModule.forFeature` exports makes dependency injection predictable and the dashboard service trivial to compose.
 - Integration tests that talk to real Redis caught issues the unit tests missed (`redisService.getOrSet` mocks hid contract changes), so running both is worth the extra time.
+- When migrating from Sequelize to TypeORM, column names might differ (e.g., `stock` vs `quantity`) — always check the entity definitions before writing queries.
 
 **Next actions**
 - Hook RabbitMQ into order/product flows so the architecture demonstrates async processing.
