@@ -23,6 +23,15 @@ curl -X POST http://localhost:3000/api/auth/login \
 - Global response interceptors improve consistency, but the frontend must unwrap the payload; a centralized Axios interceptor prevents repetitive fix-ups across components.
 - Verifying the API response shape with `curl` or HTTP files before debugging the UI saves time and confirms whether the issue is backend or frontend.
 
+**Debugging approach**
+1. Check browser console → saw `401 Unauthorized` on `/api/settings/public`
+2. Test endpoint with `curl` → confirmed backend returned 403 from `AdminGuard`
+3. Traced guard logic → found `AdminGuard` didn't check `@Public()` metadata
+4. Added `Reflector` to `AdminGuard` → endpoint now returns 200
+5. Admin login still failed → checked Network tab → response nested under `data.data`
+6. Updated `AuthContext` to extract `response.data.data.token` → login worked
+7. Categories page crashed with `.filter is not a function` → added global Axios interceptor to unwrap all responses
+
 **Next actions**
 - Wire `RabbitMQService` into `OrdersService` so order creation emits `order.created` events for async notification/analytics.
 - Seed baseline categories and products to avoid empty admin dashboards after a clean setup.
