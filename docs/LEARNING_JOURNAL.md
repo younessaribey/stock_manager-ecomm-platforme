@@ -1,5 +1,26 @@
 # Learning Journal
 
+## Fixes & Big Tasks Summary (since project start)
+
+- Ported Express app to NestJS with TypeORM entities (Users, Products, Categories, Orders, OrderItems, Cart, Wishlist, Settings, Images, News).
+- Dockerized local stack (Postgres on 5434, Redis, RabbitMQ); fixed port conflicts and the “sh: nest: not found” issue by avoiding node_modules volume override.
+- Resolved CORS/client header misuse by removing Access-Control-Allow-* from Axios requests; server handles CORS.
+- Standardized API responses with a global TransformInterceptor and added a frontend Axios interceptor to unwrap `{ success, data, message }`.
+- Made `/api/settings/public` truly public; updated `AdminGuard` to respect `@Public()` metadata.
+- Fixed admin login/redirect loop: frontend now extracts `token/user` from wrapped response; ensured admin role/approval in DB.
+- Fixed categories crash (`categories.filter is not a function`) by normalizing Axios responses.
+- Repaired Redis service types and connection options (`RedisClientType`, socket host/port, password); added graceful degradation.
+- RabbitMQ module typing fix: `useFactory` returns `RmqOptions`; centralized `RabbitMQService` for `send/emit`.
+- Dashboard stats corrections: `stock` → `quantity`, `totalAmount` → `total`, proper `findAll(userId)` usage.
+- Images module fixes: `@UploadedFile() file: any` for Multer typing; ordering by `createdAt`.
+- Settings: added `key` column in entity; service lookups use `where: { key }`.
+- Wishlist: ordering fix (`id: 'DESC'`).
+- Vercel build script fix to stop referencing removed `server/`; builds only client.
+- Added unit, integration (with real Redis), and E2E tests; provided DataSource mock for integration tests.
+- Set up CI (lint, test, build, coverage) and CD workflow to DigitalOcean; documented commit conventions.
+- Frontend API consolidation (use central `api.js`); updated pages to use `productsAPI`/`categoriesAPI`.
+- Documentation cleanup; added local preview/setup guides and a Learning Journal; ignored private notes in Git.
+
 ## 2025-11-16
 
 **What I tackled**
