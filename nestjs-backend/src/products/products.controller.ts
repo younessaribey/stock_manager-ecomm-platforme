@@ -34,7 +34,8 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import { Express } from 'express';
+import type { Request } from 'express';
+import type { FileFilterCallback, File as MulterFile } from 'multer';
 
 const productUploadsDir = join(process.cwd(), 'uploads', 'products');
 
@@ -55,7 +56,7 @@ const storage = diskStorage({
   },
 });
 
-const imageFileFilter = (_req: Express.Request, file: Express.Multer.File, cb) => {
+const imageFileFilter = (_req: Request, file: MulterFile, cb: FileFilterCallback) => {
   if (!file.mimetype.startsWith('image/')) {
     return cb(new BadRequestException('Only image uploads are allowed'), false);
   }
@@ -63,8 +64,8 @@ const imageFileFilter = (_req: Express.Request, file: Express.Multer.File, cb) =
 };
 
 type UploadedProductFiles = {
-  image?: Express.Multer.File[];
-  additionalImages?: Express.Multer.File[];
+  image?: MulterFile[];
+  additionalImages?: MulterFile[];
 };
 
 @Controller('products') // All routes start with /api/products

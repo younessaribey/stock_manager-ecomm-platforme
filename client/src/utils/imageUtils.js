@@ -4,6 +4,20 @@ import { useState, useEffect } from 'react';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 const API_BASE = API_URL.replace(/\/api$/, '');
 
+const BRAND_FALLBACK_IMAGES = {
+  Apple: 'https://images.unsplash.com/photo-1695048133142-86475cf3d8ff?auto=format&fit=crop&w=900&q=80',
+  Samsung: 'https://images.unsplash.com/photo-1610792516820-06d3c7b3f1d4?auto=format&fit=crop&w=900&q=80',
+  Huawei: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80',
+  Xiaomi: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80',
+  Google: 'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=900&q=80',
+  OnePlus: 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80',
+};
+
+export const getBrandFallbackImage = (brandName) => {
+  if (!brandName) return null;
+  return BRAND_FALLBACK_IMAGES[brandName] || null;
+};
+
 /**
  * Get uploaded image URL with proper formatting
  * @param {string} imageUrl - Image URL from database

@@ -75,14 +75,12 @@ api.interceptors.response.use(
 // Products API - switches between demo and production
 export const productsAPI = APP_CONFIG.DEMO_MODE ? demoProductsAPI : {
   getAll: () => api.get('/products'),
+  getAllPublic: () => api.get('/products/public'),
   getById: (id) => api.get(`/products/${id}`),
+  getByIdPublic: (id) => api.get(`/products/${id}/public`),
   create: (productData) => api.post('/products', productData),
   createWithImage: (formData) => {
-    return api.post('/products', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    return api.post('/products', formData);
   },
   update: (id, productData) => api.patch(`/products/${id}`, productData),
   updateWithImage: (id, formData) => {
@@ -98,6 +96,7 @@ export const productsAPI = APP_CONFIG.DEMO_MODE ? demoProductsAPI : {
 // Categories API - switches between demo and production
 export const categoriesAPI = APP_CONFIG.DEMO_MODE ? demoCategoriesAPI : {
   getAll: () => api.get('/categories'),
+  getPublic: () => api.get('/categories'),
   getById: (id) => api.get(`/categories/${id}`),
   create: (categoryData) => api.post('/categories', categoryData),
   update: (id, categoryData) => api.put(`/categories/${id}`, categoryData),

@@ -24,7 +24,16 @@ import {
 } from 'react-icons/fa';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { getUploadedImageUrl } from '../../utils/imageUtils';
+import { getUploadedImageUrl, getBrandFallbackImage } from '../../utils/imageUtils';
+
+const BRAND_FALLBACK_IMAGES = {
+  Apple: 'https://images.unsplash.com/photo-1695048133142-86475cf3d8ff?auto=format&fit=crop&w=900&q=80',
+  Samsung: 'https://images.unsplash.com/photo-1610792516820-06d3c7b3f1d4?auto=format&fit=crop&w=900&q=80',
+  Huawei: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=900&q=80',
+  Xiaomi: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80',
+  Google: 'https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=900&q=80',
+  OnePlus: 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80',
+};
 
 const Products = () => {
   const { theme } = useTheme();
@@ -69,7 +78,7 @@ const Products = () => {
         // Load products and categories in parallel
         const [productsResponse, categoriesResponse] = await Promise.all([
           productsAPI.getAllPublic(),
-          categoriesAPI.getAll()
+          categoriesAPI.getPublic()
         ]);
         
         setProducts(productsResponse.data);
@@ -165,7 +174,7 @@ const Products = () => {
     setSelectedMainCategory('');
     setSelectedSubcategory('');
     setSearchTerm('');
-    setPriceRange([0, 2000]);
+    setPriceRange([0, 400000]);
     setSortBy('name');
   };
 
@@ -473,16 +482,35 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
 
   // Get all product images
   const getAllImages = () => {
-    const images = [product.imageUrl];
+    const images = [];
+
+    if (product.imageUrl) {
+      images.push(product.imageUrl);
+    }
+
     if (product.images) {
       try {
         const additionalImages = JSON.parse(product.images);
-        images.push(...additionalImages);
+        if (Array.isArray(additionalImages)) {
+          images.push(...additionalImages);
+        }
       } catch (e) {
         console.error('Error parsing additional images:', e);
       }
     }
-    return images.filter(Boolean);
+
+    if (!images.length) {
+      const brandFallback = getBrandFallbackImage(product.category?.name);
+      if (brandFallback) {
+        images.push(brandFallback);
+      }
+    }
+
+    if (!images.length) {
+      images.push(DEFAULT_PHONE_IMAGE);
+    }
+
+    return images;
   };
 
   const allImages = getAllImages();

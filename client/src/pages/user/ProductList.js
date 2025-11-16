@@ -4,7 +4,15 @@ import { FaSearch, FaFilter, FaHeart, FaShoppingCart, FaSortAmountDown, FaSortAm
 import { toast } from 'react-toastify';
 
 import { productsAPI, categoriesAPI, wishlistAPI, cartAPI } from '../../utils/api';
-import { getUploadedImageUrl } from '../../utils/imageUtils';
+import { getUploadedImageUrl, getBrandFallbackImage } from '../../utils/imageUtils';
+import { DEFAULT_PHONE_IMAGE } from '../../data/seedData';
+
+const formatPriceDzd = (value) =>
+  new Intl.NumberFormat('fr-DZ', {
+    style: 'currency',
+    currency: 'DZD',
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
 
 const ProductList = () => {
   // Don't block product fetching for guests
@@ -14,7 +22,7 @@ const ProductList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 400000 });
   // const [fullPriceRange, setFullPriceRange] = useState({ min: 0, max: 1000 }); // Not used, remove or re-add if needed
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -24,18 +32,18 @@ const ProductList = () => {
     const fetchProducts = async () => {
       try {
         // Fetch categories from backend
-        const categoriesRes = await categoriesAPI.getAll();
-        if (categoriesRes.data && Array.isArray(categoriesRes.data)) {
-          setCategories(categoriesRes.data);
-        } else if (categoriesRes.data && categoriesRes.data.categories) {
-          setCategories(categoriesRes.data.categories);
-        }
-        // Fetch products from backend
-        const productsRes = await productsAPI.getAll();
+        const [categoriesRes, productsRes] = await Promise.all([
+          categoriesAPI.getPublic(),
+          productsAPI.getAllPublic()
+        ]);
+
+        const flatCategories = categoriesRes.data || [];
+        setCategories(flatCategories);
+
         setProducts(productsRes.data);
         // Dynamically set price range based on fetched products
         if (productsRes.data.length > 0) {
-          const prices = productsRes.data.map(p => p.price);
+          const prices = productsRes.data.map(p => Number(p.price));
           const min = Math.min(...prices);
           const max = Math.max(...prices);
           // setFullPriceRange({ min, max }); // Removed: fullPriceRange not used
@@ -59,10 +67,11 @@ const ProductList = () => {
         product.description.toLowerCase().includes(searchTerm.toLowerCase());
       
       // Category filter
-      const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+      const matchesCategory = selectedCategory ? product.categoryId === parseInt(selectedCategory, 10) : true;
       
       // Price filter
-      const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
+      const price = Number(product.price);
+      const matchesPrice = price >= priceRange.min && price <= priceRange.max;
       
       return matchesSearch && matchesCategory && matchesPrice;
     })
@@ -206,8 +215,10 @@ const handleAddToCart = async (productId) => {
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md"
               >
                 <option value="">All Categories</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>{category}</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -215,14 +226,14 @@ const handleAddToCart = async (productId) => {
             {/* Price Range Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price Range: ${priceRange.min} - ${priceRange.max}
+                Price Range: {formatPriceDzd(priceRange.min)} - {formatPriceDzd(priceRange.max)}
               </label>
               <div className="flex items-center space-x-4">
                 <input
                   type="range"
                   min="0"
-                  max="1000"
-                  step="10"
+                  max="400000"
+                  step="1000"
                   value={priceRange.min}
                   onChange={(e) => setPriceRange({...priceRange, min: parseInt(e.target.value)})}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -230,8 +241,8 @@ const handleAddToCart = async (productId) => {
                 <input
                   type="range"
                   min="0"
-                  max="1000"
-                  step="10"
+                  max="400000"
+                  step="1000"
                   value={priceRange.max}
                   onChange={(e) => setPriceRange({...priceRange, max: parseInt(e.target.value)})}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
@@ -244,7 +255,7 @@ const handleAddToCart = async (productId) => {
               <button
                 onClick={() => {
                   setSelectedCategory('');
-                  setPriceRange({ min: 0, max: 1000 });
+                  setPriceRange({ min: 0, max: 400000 });
                   setSearchTerm('');
                   setSortBy('name');
                   setSortOrder('asc');
@@ -265,15 +276,24 @@ const handleAddToCart = async (productId) => {
             <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
               <Link to={`/products/${product.id}`}>
                 <div className="relative h-48">
+                  {(() => {
+                    const fallbackImage =
+                      getBrandFallbackImage(product.category?.name) || DEFAULT_PHONE_IMAGE;
+                    const imageSrc = product.imageUrl
+                      ? getUploadedImageUrl(product.imageUrl)
+                      : fallbackImage;
+                    return (
                   <img 
-                    src={getUploadedImageUrl(product.imageUrl)} 
+                    src={imageSrc} 
                     alt={product.name} 
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = 'https://via.placeholder.com/300x200?text=Industrial+Equipment';
+                      e.target.src = fallbackImage;
                     }}
                   />
+                    );
+                  })()}
                   {product.quantity < 10 && (
                     <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs rounded-full">
                       Low Stock: {product.quantity}
@@ -290,9 +310,13 @@ const handleAddToCart = async (productId) => {
                         {product.name}
                       </Link>
                     </h3>
-                    <p className="text-sm text-gray-500 mb-2">{product.category}</p>
+                    <p className="text-sm text-gray-500 mb-2">
+                      {product.category?.name || 'General'}
+                    </p>
                   </div>
-                  <p className="text-lg font-bold text-gray-900">${Number(product.price).toFixed(2)}</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {formatPriceDzd(product.price)}
+                  </p>
                 </div>
                 
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
@@ -323,7 +347,7 @@ const handleAddToCart = async (productId) => {
           <button
             onClick={() => {
               setSelectedCategory('');
-              setPriceRange({ min: 0, max: 1000 });
+      setPriceRange({ min: 0, max: 400000 });
               setSearchTerm('');
             }}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
