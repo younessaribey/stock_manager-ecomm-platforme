@@ -34,7 +34,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import type { Request } from 'express';
 import type { FileFilterCallback, File as MulterFile } from 'multer';
 
 const productUploadsDir = join(process.cwd(), 'uploads', 'products');

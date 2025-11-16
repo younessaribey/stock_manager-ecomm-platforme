@@ -37,8 +37,22 @@ const ProductList = () => {
           productsAPI.getAllPublic()
         ]);
 
-        const flatCategories = categoriesRes.data || [];
-        setCategories(flatCategories);
+        const structured = categoriesRes.data || [];
+        const dropdownOptions = [];
+
+        structured
+          .filter((category) => !category.parentId)
+          .forEach((main) => {
+            dropdownOptions.push({ id: main.id, name: main.name });
+            (main.subcategories || []).forEach((sub) => {
+              dropdownOptions.push({
+                id: sub.id,
+                name: `${main.name} › ${sub.name}`,
+              });
+            });
+          });
+
+        setCategories(dropdownOptions);
 
         setProducts(productsRes.data);
         // Dynamically set price range based on fetched products
@@ -321,7 +335,7 @@ const handleAddToCart = async (productId) => {
                 
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
                 
-                <div className="flex justify-between">
+                <div className="flex">
                   <button
                     onClick={() => handleAddToCart(product.id)}
                     className="flex-1 mr-2 flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700"
@@ -329,6 +343,13 @@ const handleAddToCart = async (productId) => {
                     <FaShoppingCart className="mr-2" />
                     Add to Cart
                   </button>
+                  <Link
+                    to={`/shop/${product.id}/checkout`}
+                    className="mr-2 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-900 bg-white hover:bg-gray-50"
+                  >
+                    <FaEye className="mr-2" />
+                    View
+                  </Link>
                   <button
                     onClick={() => handleAddToWishlist(product.id)}
                     className="flex items-center justify-center p-2 border border-gray-300 rounded-md shadow-sm text-sm text-gray-900 bg-white hover:bg-gray-50"

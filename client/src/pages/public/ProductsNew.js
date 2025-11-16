@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import { productsAPI, categoriesAPI } from '../../utils/api';
 import { DEFAULT_PHONE_IMAGE } from '../../data/seedData';
-import { 
-  FaShoppingCart, 
-  FaSearch, 
-  FaFilter, 
-  FaTh, 
+import {
+  FaShoppingCart,
+  FaSearch,
+  FaFilter,
+  FaTh,
   FaList,
   FaMobileAlt,
   FaTabletAlt,
@@ -15,12 +16,11 @@ import {
   FaClock,
   FaPlug,
   FaBox,
-
   FaBatteryFull,
   FaEye,
   FaTimes,
   FaChevronDown,
-  FaChevronUp
+  FaChevronUp,
 } from 'react-icons/fa';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -35,6 +35,13 @@ const BRAND_FALLBACK_IMAGES = {
   OnePlus: 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=900&q=80',
 };
 
+const formatPriceDzd = (value) =>
+  new Intl.NumberFormat('fr-DZ', {
+    style: 'currency',
+    currency: 'DZD',
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
+
 const Products = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -46,7 +53,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortBy] = useState('name');
-  const [priceRange, setPriceRange] = useState([0, 100000]); // Increased to accommodate DZD prices
+  const [priceRange, setPriceRange] = useState([0, 400000]); // DZD pricing range
   const [showFilters, setShowFilters] = useState(false); // Filters collapsed by default
 
   const [expandedCategories, setExpandedCategories] = useState({});
@@ -373,29 +380,25 @@ const Products = () => {
               {/* Price Range */}
               <div className="mb-6">
                 <label className={`block text-sm font-medium mb-3 ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                  Price Range: ${priceRange[0]} - ${priceRange[1]}
+                  Price Range: {formatPriceDzd(priceRange[0])} - {formatPriceDzd(priceRange[1])}
                 </label>
                 <div className="flex space-x-3">
                   <input
                     type="number"
                     placeholder="Min"
                     value={priceRange[0]}
-                    onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, priceRange[1]])}
+                    onChange={(e) => setPriceRange([parseInt(e.target.value, 10) || 0, priceRange[1]])}
                     className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      isDark 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
+                      isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                     }`}
                   />
                   <input
                     type="number"
                     placeholder="Max"
                     value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value) || 2000])}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value, 10) || 400000])}
                     className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      isDark 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
+                      isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'
                     }`}
                   />
                 </div>
@@ -597,7 +600,7 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
             <div className="flex flex-col justify-between items-end ml-4">
               <div className="text-right mb-2">
                 <div className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  ${parseFloat(product.price).toFixed(2)}
+                  {formatPriceDzd(product.price)}
                 </div>
                 <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                   {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}
@@ -739,7 +742,7 @@ const ProductCard = ({ product, viewMode, onAddToCart, isDark }) => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              ${parseFloat(product.price).toFixed(2)}
+              {formatPriceDzd(product.price)}
             </div>
             <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               {product.quantity > 0 ? `${product.quantity} in stock` : 'Out of stock'}

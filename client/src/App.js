@@ -13,6 +13,7 @@ import Home from './pages/public/Home';
 import PublicProducts from './pages/public/ProductsNew';
 import PublicProductDetails from './pages/public/ProductDetails';
 import OnePageCheckout from './pages/public/OnePageCheckout';
+import QuickCheckout from './pages/public/QuickCheckout';
 import About from './pages/public/About';
 import Contact from './pages/public/Contact';
 import News from './pages/public/News';
@@ -165,6 +166,7 @@ function App() {
               <Route path="/products" element={<PublicRoute><PublicProducts /></PublicRoute>} />
               <Route path="/products/:id" element={<PublicRoute><PublicProductDetails /></PublicRoute>} />
               <Route path="/checkout/:id" element={<PublicRoute><OnePageCheckout /></PublicRoute>} />
+              <Route path="/shop/:productId/checkout" element={<PublicRoute><QuickCheckout /></PublicRoute>} />
               <Route path="/news" element={<PublicRoute><News /></PublicRoute>} />
               <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
               <Route path="/contact" element={<PublicRoute><Contact /></PublicRoute>} />
