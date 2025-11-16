@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaShoppingCart, FaPhone, FaMapMarkerAlt, FaUser, FaEnvelope } from 'react-icons/fa';
-import axios from 'axios';
-// import { useLanguage } from '../../contexts/LanguageContext'; // Removed as unused
 import { useTheme } from '../../contexts/ThemeContext';
-import { getUploadedImageUrl } from '../../utils/imageUtils';
+import { getUploadedImageUrl, getBrandFallbackImage } from '../../utils/imageUtils';
+import { productsAPI } from '../../utils/api';
+import api from '../../utils/api';
 
 const OnePageCheckout = () => {
   const { id } = useParams();
@@ -26,6 +26,13 @@ const OnePageCheckout = () => {
   });
   const [orderLoading, setOrderLoading] = useState(false);
 
+  const formatPriceDzd = (value) =>
+    new Intl.NumberFormat('fr-DZ', {
+      style: 'currency',
+      currency: 'DZD',
+      maximumFractionDigits: 0,
+    }).format(Number(value || 0));
+
   // Algeria wilayas
   const wilayas = [
     "Adrar", "Chlef", "Laghouat", "Oum El Bouaghi", "Batna", "Béjaïa", "Biskra", "Béchar",
@@ -38,19 +45,18 @@ const OnePageCheckout = () => {
   ];
 
   useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await productsAPI.getByIdPublic(id);
+        setProduct(response.data);
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProduct();
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const fetchProduct = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5050/api/products/${id}/public`);
-      setProduct(response.data);
-    } catch (error) {
-      console.error('Error fetching product:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [id]);
 
   const handleInputChange = (e) => {
     setOrderForm({
@@ -72,7 +78,7 @@ const OnePageCheckout = () => {
         totalPrice: product.price * orderForm.quantity
       };
 
-      await axios.post('http://localhost:5050/api/algeria-orders', orderData);
+      await api.post('/algeria-orders', orderData);
       
       alert('🎉 Order placed successfully! We will contact you soon.');
       navigate('/');
@@ -112,6 +118,7 @@ const OnePageCheckout = () => {
   };
 
   const allImages = getAllImages();
+  const galleryImages = allImages.length ? allImages : [mainImage];
 
   if (loading) {
     return (
@@ -140,6 +147,11 @@ const OnePageCheckout = () => {
     );
   }
 
+  const mainImage =
+    product.imageUrl
+      ? getUploadedImageUrl(product.imageUrl)
+      : getBrandFallbackImage(product.category?.name) || '/assets/product-lg.jpg';
+
   return (
     <div className={`min-h-screen py-8 ${isDark ? 'bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900' : 'bg-gradient-to-br from-slate-50 via-white to-gray-100'}`}>
       <div className="max-w-7xl mx-auto px-4">
@@ -158,22 +170,26 @@ const OnePageCheckout = () => {
             <div className="p-6">
               <div className="mb-4 relative group">
                 <img
-                  src={getUploadedImageUrl(allImages[currentImageIndex]) || '/assets/product-lg.jpg'}
+                  src={getUploadedImageUrl(galleryImages[currentImageIndex]) || mainImage}
                   alt={product.name}
                   className="w-full h-96 object-cover rounded-lg shadow-lg"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = mainImage;
+                  }}
                 />
                 
                 {/* Navigation arrows for multiple images */}
-                {allImages.length > 1 && (
+                {galleryImages.length > 1 && (
                   <>
                     <button
-                      onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}
+                      onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : galleryImages.length - 1)}
                       className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
                     >
                       ‹
                     </button>
                     <button
-                      onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}
+                      onClick={() => setCurrentImageIndex(prev => prev < galleryImages.length - 1 ? prev + 1 : 0)}
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
                     >
                       ›
@@ -181,16 +197,16 @@ const OnePageCheckout = () => {
                     
                     {/* Image counter */}
                     <div className="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-3 py-1 rounded-full">
-                      {currentImageIndex + 1}/{allImages.length}
+                      {currentImageIndex + 1}/{galleryImages.length}
                     </div>
                   </>
                 )}
               </div>
               
               {/* Image Thumbnails */}
-              {allImages.length > 1 && (
+              {galleryImages.length > 1 && (
                 <div className="flex space-x-2 overflow-x-auto pb-2">
-                  {allImages.map((image, index) => (
+                  {galleryImages.map((image, index) => (
                     <img
                       key={index}
                       src={getUploadedImageUrl(image)}
@@ -209,7 +225,7 @@ const OnePageCheckout = () => {
               {/* Product Details */}
               <div className="mt-6">
                 <h1 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>{product.name}</h1>
-                <p className="text-2xl font-bold text-blue-600 mb-4">{product.price} DA</p>
+                <p className="text-2xl font-bold text-blue-600 mb-4">{formatPriceDzd(product.price)}</p>
                 
                 <div className={`space-y-2 ${isDark ? 'text-gray-300' : 'text-gray-900'}`}>
                   {product.model && (
@@ -395,7 +411,7 @@ const OnePageCheckout = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Total:</span>
                     <span className="text-xl font-bold text-blue-600">
-                      {(product.price * orderForm.quantity).toLocaleString()} DA
+                      {formatPriceDzd(product.price * orderForm.quantity)}
                     </span>
                   </div>
                 </div>
