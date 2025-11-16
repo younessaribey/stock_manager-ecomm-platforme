@@ -5,11 +5,14 @@ import * as cookieParser from 'cookie-parser';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'], // Configure logging levels
   });
 
@@ -40,6 +43,15 @@ async function bootstrap() {
 
   // Cookie parser
   app.use(cookieParser());
+
+  // Serve uploads (product images, etc.)
+  const uploadsPath = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadsPath)) {
+    mkdirSync(uploadsPath, { recursive: true });
+  }
+  app.useStaticAssets(uploadsPath, {
+    prefix: '/uploads/',
+  });
 
   // Global validation pipe - Best Practice: Strict validation
   app.useGlobalPipes(

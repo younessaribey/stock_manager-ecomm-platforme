@@ -3,6 +3,7 @@
  */
 
 import { IsString, IsNumber, IsOptional, IsEnum, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @IsString()
@@ -13,18 +14,23 @@ export class CreateProductDto {
   description?: string;
 
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   price: number;
 
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   quantity: number;
 
   @IsNumber()
+  @Type(() => Number)
   categoryId: number;
 
+  @IsOptional()
   @IsNumber()
-  createdBy: number;
+  @Type(() => Number)
+  createdBy?: number;
 
   @IsOptional()
   @IsString()
@@ -57,6 +63,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   @Min(0)
   @Max(100)
   batteryHealth?: number;

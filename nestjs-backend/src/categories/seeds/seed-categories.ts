@@ -20,12 +20,14 @@ async function seedCategories() {
   await dataSource.initialize();
   const repository = dataSource.getRepository(Category);
 
-  const existingCount = await repository.count();
-  if (existingCount > 0) {
-    console.log(`Categories already exist (${existingCount}). Skipping seed.`);
-    await dataSource.destroy();
-    return;
-  }
+  const ensureCategory = async (data: Partial<Category> & { name: string }) => {
+    let category = await repository.findOne({ where: { name: data.name } });
+    if (category) {
+      return category;
+    }
+    category = repository.create(data);
+    return repository.save(category);
+  };
 
   const mainCategoriesData = [
     { name: 'Smartphones', level: 0, isActive: true },
@@ -34,23 +36,41 @@ async function seedCategories() {
     { name: 'Occasions', level: 0, isActive: true },
   ];
 
-  const mainCategories = await repository.save(mainCategoriesData);
   const categoryMap = new Map<string, Category>();
-  mainCategories.forEach((category) => categoryMap.set(category.name, category));
+
+  for (const data of mainCategoriesData) {
+    const category = await ensureCategory(data);
+    categoryMap.set(category.name, category);
+  }
 
   const subcategoriesData = [
-    { name: 'Apple', parent: categoryMap.get('Smartphones')!, level: 1, isActive: true },
-    { name: 'Samsung', parent: categoryMap.get('Smartphones')!, level: 1, isActive: true },
-    { name: 'Xiaomi', parent: categoryMap.get('Smartphones')!, level: 1, isActive: true },
-    { name: 'Gaming Laptops', parent: categoryMap.get('Laptops')!, level: 1, isActive: true },
-    { name: 'Business Laptops', parent: categoryMap.get('Laptops')!, level: 1, isActive: true },
-    { name: 'Chargers', parent: categoryMap.get('Accessories')!, level: 1, isActive: true },
-    { name: 'Cables', parent: categoryMap.get('Accessories')!, level: 1, isActive: true },
-    { name: 'Certified Used', parent: categoryMap.get('Occasions')!, level: 1, isActive: true },
-    { name: 'Refurbished', parent: categoryMap.get('Occasions')!, level: 1, isActive: true },
+    { name: 'Apple', parentName: 'Smartphones' },
+    { name: 'Samsung', parentName: 'Smartphones' },
+    { name: 'Xiaomi', parentName: 'Smartphones' },
+    { name: 'Huawei', parentName: 'Smartphones' },
+    { name: 'Google', parentName: 'Smartphones' },
+    { name: 'OnePlus', parentName: 'Smartphones' },
+    { name: 'Gaming Laptops', parentName: 'Laptops' },
+    { name: 'Business Laptops', parentName: 'Laptops' },
+    { name: 'Chargers', parentName: 'Accessories' },
+    { name: 'Cables', parentName: 'Accessories' },
+    { name: 'Certified Used', parentName: 'Occasions' },
+    { name: 'Refurbished', parentName: 'Occasions' },
   ];
 
-  await repository.save(subcategoriesData);
+  for (const subcategory of subcategoriesData) {
+    const parent = categoryMap.get(subcategory.parentName);
+    if (!parent) continue;
+
+    await ensureCategory({
+      name: subcategory.name,
+      parent,
+      parentId: parent.id,
+      level: 1,
+      isActive: true,
+    });
+  }
+
   console.log('✅ Seeded categories and subcategories successfully.');
   await dataSource.destroy();
 }

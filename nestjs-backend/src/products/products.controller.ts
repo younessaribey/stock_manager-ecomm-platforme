@@ -20,12 +20,52 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
+  BadRequestException,
+  Request,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Public } from '../auth/decorators/public.decorator';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { Express } from 'express';
+
+const productUploadsDir = join(process.cwd(), 'uploads', 'products');
+
+const ensureUploadDirExists = () => {
+  if (!existsSync(productUploadsDir)) {
+    mkdirSync(productUploadsDir, { recursive: true });
+  }
+};
+
+const storage = diskStorage({
+  destination: (_req, _file, cb) => {
+    ensureUploadDirExists();
+    cb(null, productUploadsDir);
+  },
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+  },
+});
+
+const imageFileFilter = (_req: Express.Request, file: Express.Multer.File, cb) => {
+  if (!file.mimetype.startsWith('image/')) {
+    return cb(new BadRequestException('Only image uploads are allowed'), false);
+  }
+  cb(null, true);
+};
+
+type UploadedProductFiles = {
+  image?: Express.Multer.File[];
+  additionalImages?: Express.Multer.File[];
+};
 
 @Controller('products') // All routes start with /api/products
 export class ProductsController {
@@ -83,8 +123,44 @@ export class ProductsController {
    */
   @UseGuards(JwtAuthGuard)
   @Post()
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'additionalImages', maxCount: 8 },
+      ],
+      {
+        storage,
+        fileFilter: imageFileFilter,
+        limits: {
+          fileSize: 5 * 1024 * 1024, // 5MB
+        },
+      },
+    ),
+  )
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createProductDto: CreateProductDto) {
+  async create(
+    @UploadedFiles() files: UploadedProductFiles,
+    @Body() createProductDto: CreateProductDto,
+    @Request() req,
+  ) {
+    const uploadBasePath = '/uploads/products';
+
+    if (files?.image?.length) {
+      createProductDto.imageUrl = `${uploadBasePath}/${files.image[0].filename}`;
+    }
+
+    if (files?.additionalImages?.length) {
+      const gallery = files.additionalImages.map((file) => `${uploadBasePath}/${file.filename}`);
+      createProductDto.images = JSON.stringify(gallery);
+    }
+
+    createProductDto.createdBy = req.user?.id;
+
+    if (!createProductDto.createdBy) {
+      throw new BadRequestException('Unable to determine product owner');
+    }
+
     return this.productsService.create(createProductDto);
   }
 

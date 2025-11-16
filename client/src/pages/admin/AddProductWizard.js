@@ -2,7 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { categoriesAPI, productsAPI } from '../../utils/api';
-import { FaArrowLeft, FaArrowRight, FaCheck, FaMobile, FaLaptop, FaTabletAlt, FaClock, FaPlug, FaGift, FaTag, FaBox, FaTruck, FaHeart, FaPlus, FaTimes, FaImage } from 'react-icons/fa';
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaCheck,
+  FaMobile,
+  FaLaptop,
+  FaTabletAlt,
+  FaClock,
+  FaPlug,
+  FaGift,
+  FaTag,
+  FaBox,
+  FaTruck,
+  FaHeart,
+  FaPlus,
+  FaTimes,
+  FaImage,
+} from 'react-icons/fa';
+import { SiApple, SiSamsung, SiHuawei, SiXiaomi, SiGoogle, SiOneplus } from 'react-icons/si';
 
 // Smart model database for different brands
 const SMART_MODELS = {
@@ -77,6 +95,21 @@ const SMART_MODELS = {
     ],
     storageOptions: ['128GB', '256GB', '512GB', '1TB'],
     colors: ['Black', 'White', 'Blue', 'Gold', 'Purple', 'Green'],
+    hasBatteryHealth: false,
+    batteryCycles: false
+  },
+
+  // Xiaomi Smartphones
+  'Xiaomi': {
+    type: 'smartphone',
+    models: [
+      'Xiaomi 14 Ultra', 'Xiaomi 14 Pro', 'Xiaomi 14',
+      'Xiaomi 13 Ultra', 'Xiaomi 13 Pro', 'Xiaomi 13',
+      'Redmi Note 13 Pro+', 'Redmi Note 13 Pro', 'Redmi Note 13',
+      'Redmi Note 12 Pro+', 'Redmi Note 12 Pro', 'Redmi Note 12',
+    ],
+    storageOptions: ['128GB', '256GB', '512GB', '1TB'],
+    colors: ['Black', 'White', 'Blue', 'Green', 'Purple', 'Silver'],
     hasBatteryHealth: false,
     batteryCycles: false
   },
@@ -333,19 +366,17 @@ const AddProductWizard = () => {
     }
   };
 
-  const getBrandEmoji = (brandName) => {
-    const brandEmojis = {
-      'Apple': '🍎',
-      'Samsung': '📱',
-      'Huawei': '🌟',
-      'Google': '🔍',
-      'OnePlus': '⚡',
-      'Xiaomi': '🔥',
-      'HP': '💻',
-      'Dell': '🖥️',
-      'Asus': '⚙️'
+  const getBrandIcon = (brandName) => {
+    const iconClasses = 'text-3xl';
+    const brandIcons = {
+      'Apple': <SiApple className={`${iconClasses} text-gray-900`} />,
+      'Samsung': <SiSamsung className={`${iconClasses} text-blue-500`} />,
+      'Huawei': <SiHuawei className={`${iconClasses} text-rose-500`} />,
+      'Google': <SiGoogle className={`${iconClasses} text-emerald-500`} />,
+      'OnePlus': <SiOneplus className={`${iconClasses} text-red-500`} />,
+      'Xiaomi': <SiXiaomi className={`${iconClasses} text-orange-500`} />,
     };
-    return brandEmojis[brandName] || '📦';
+    return brandIcons[brandName] || <FaGift className={`${iconClasses} text-gray-500`} />;
   };
 
   const getColorClass = (colorName) => {
@@ -552,7 +583,7 @@ const AddProductWizard = () => {
                 : 'border-gray-200 hover:border-blue-300'
             }`}
           >
-            <div className="text-2xl mb-2">{getBrandEmoji(brand.name)}</div>
+            <div className="text-2xl mb-2">{getBrandIcon(brand.name)}</div>
             <h4 className="font-medium">{brand.name}</h4>
                             </button>
                           ))}
