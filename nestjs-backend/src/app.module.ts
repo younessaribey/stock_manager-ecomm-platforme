@@ -17,6 +17,7 @@ import { NewsModule } from './news/news.module';
 import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
 import { RedisModule } from './redis/redis.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
+import { AlgeriaOrdersModule } from './algeria-orders/algeria-orders.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TypeOrmConfigService } from './config/typeorm.config';
     SettingsModule,
     ImagesModule,
     NewsModule,
+    AlgeriaOrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

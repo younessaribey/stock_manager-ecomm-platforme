@@ -10,6 +10,7 @@ import { Cart } from '../cart/entities/cart.entity';
 import { Wishlist } from '../wishlist/entities/wishlist.entity';
 import { Setting } from '../settings/entities/setting.entity';
 import { ImgBBImage } from '../images/entities/imgbb-image.entity';
+import { AlgeriaOrder } from '../algeria-orders/entities/algeria-order.entity';
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -25,7 +26,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       username: this.configService.get('DB_USER', 'postgres'),
       password: this.configService.get('DB_PASSWORD', 'postgres'),
       database: this.configService.get('DB_NAME', 'stmg'),
-      entities: [User, Product, Category, Order, OrderItem, Cart, Wishlist, Setting, ImgBBImage],
+      entities: [User, Product, Category, Order, OrderItem, Cart, Wishlist, Setting, ImgBBImage, AlgeriaOrder],
       synchronize: !isProduction, // Auto-sync in dev, use migrations in prod
       logging: !isProduction,
       ssl: isProduction

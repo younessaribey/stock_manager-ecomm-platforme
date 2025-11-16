@@ -117,6 +117,11 @@ const OnePageCheckout = () => {
     return images.filter(Boolean);
   };
 
+  const mainImage =
+    product?.imageUrl
+      ? getUploadedImageUrl(product.imageUrl)
+      : getBrandFallbackImage(product?.category?.name) || '/assets/product-lg.jpg';
+
   const allImages = getAllImages();
   const galleryImages = allImages.length ? allImages : [mainImage];
 
@@ -146,12 +151,6 @@ const OnePageCheckout = () => {
       </div>
     );
   }
-
-  const mainImage =
-    product.imageUrl
-      ? getUploadedImageUrl(product.imageUrl)
-      : getBrandFallbackImage(product.category?.name) || '/assets/product-lg.jpg';
-
   return (
     <div className={`min-h-screen py-8 ${isDark ? 'bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900' : 'bg-gradient-to-br from-slate-50 via-white to-gray-100'}`}>
       <div className="max-w-7xl mx-auto px-4">

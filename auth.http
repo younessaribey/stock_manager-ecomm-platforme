@@ -1,0 +1,9 @@
+### Register admin
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@demo.com",
+  "password": "admin123",
+  "name": "Admin User"
+}

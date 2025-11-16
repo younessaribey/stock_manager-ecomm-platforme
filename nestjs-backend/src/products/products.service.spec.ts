@@ -36,6 +36,7 @@ describe('ProductsService', () => {
     get: jest.fn(),
     set: jest.fn(),
     del: jest.fn(),
+    getOrSet: jest.fn(),
   };
 
   const mockDataSource = {
@@ -105,6 +106,10 @@ describe('ProductsService', () => {
   describe('findOne', () => {
     it('should return a single product', async () => {
       mockRepository.findOne.mockResolvedValue(mockProduct);
+      // Mock getOrSet to call the callback function (bypass cache for tests)
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       const result = await service.findOne(1);
 
@@ -117,6 +122,10 @@ describe('ProductsService', () => {
 
     it('should throw NotFoundException when product not found', async () => {
       mockRepository.findOne.mockResolvedValue(null);
+      // Mock getOrSet to call the callback function
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
       await expect(service.findOne(999)).rejects.toThrow(
@@ -136,6 +145,10 @@ describe('ProductsService', () => {
 
       mockRepository.findOne.mockResolvedValue(mockProduct);
       mockRepository.save.mockResolvedValue(updatedProduct);
+      // Mock getOrSet for the findOne call inside update
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       const result = await service.update(1, updateProductDto);
 
@@ -145,6 +158,10 @@ describe('ProductsService', () => {
 
     it('should throw NotFoundException when updating non-existent product', async () => {
       mockRepository.findOne.mockResolvedValue(null);
+      // Mock getOrSet for the findOne call
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       await expect(service.update(999, { name: 'Test' })).rejects.toThrow(
         NotFoundException,
@@ -156,6 +173,10 @@ describe('ProductsService', () => {
     it('should delete a product', async () => {
       mockRepository.findOne.mockResolvedValue(mockProduct);
       mockRepository.remove.mockResolvedValue(mockProduct);
+      // Mock getOrSet for the findOne call inside remove
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       await service.remove(1);
 
@@ -165,6 +186,10 @@ describe('ProductsService', () => {
 
     it('should throw NotFoundException when deleting non-existent product', async () => {
       mockRepository.findOne.mockResolvedValue(null);
+      // Mock getOrSet for the findOne call
+      mockRedisService.getOrSet.mockImplementation(async (_key, callback) => {
+        return await callback();
+      });
 
       await expect(service.remove(999)).rejects.toThrow(NotFoundException);
     });
