@@ -27,7 +27,7 @@ export class AlgeriaOrdersService {
 
     // 🔔 Send notification to RabbitMQ for admin dashboard
     try {
-      await this.rabbitMQService.emit('order.created', {
+      await this.rabbitMQService.emitEvent('order.created', {
         orderId: savedOrder.id,
         customerName: savedOrder.customerName,
         productName: savedOrder.productName,
@@ -71,7 +71,7 @@ export class AlgeriaOrdersService {
     // 🔔 Send status update notification if status changed
     if (updateAlgeriaOrderDto.status && oldStatus !== updateAlgeriaOrderDto.status) {
       try {
-        await this.rabbitMQService.emit('order.status_updated', {
+        await this.rabbitMQService.emitEvent('order.status_updated', {
           orderId: updatedOrder.id,
           customerName: updatedOrder.customerName,
           oldStatus,
